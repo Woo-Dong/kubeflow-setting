@@ -16,7 +16,6 @@ sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-
 ## hostname
 ```ssh
 # hostname setting
@@ -52,7 +51,6 @@ sudo apt-get update
 sudo apt-get install -y kubelet=1.21.7-00 kubeadm=1.21.7-00 kubectl=1.21.7-00 &&
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
-
 
 ## init kubernetes cluster
 ```sh
@@ -234,13 +232,6 @@ kubectl port-forward --address 0.0.0.0 svc/seldon-core-analytics-grafana -n seld
 ---
 
 ### truble shooting
-* pv, pvc
-  > https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/
-  ```sh
-  kubectl apply -f https://k8s.io/examples/pods/storage/pv-volume.yaml
-  kubectl apply -f https://k8s.io/examples/pods/storage/pv-claim.yaml
-  kubectl apply -f https://k8s.io/examples/pods/storage/pv-pod.yaml
-  ```
 * pod restart command
   ```sh
   kubectl get pod <pod_name> -n <namespace> -o yaml | kubectl replace --force -f -

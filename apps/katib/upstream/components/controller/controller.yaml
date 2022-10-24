@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,6 +17,7 @@ spec:
         katib.kubeflow.org/component: controller
       annotations:
         prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
         sidecar.istio.io/inject: "false"
     spec:
       serviceAccountName: katib-controller
@@ -30,6 +32,7 @@ spec:
             - "--trial-resources=PyTorchJob.v1.kubeflow.org"
             - "--trial-resources=MPIJob.v1.kubeflow.org"
             - "--trial-resources=XGBoostJob.v1.kubeflow.org"
+            - "--trial-resources=MXJob.v1.kubeflow.org"
           ports:
             - containerPort: 8443
               name: webhook
