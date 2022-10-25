@@ -1,5 +1,5 @@
 #!/bin/bash
-kubeadm config images pull
+sudo kubeadm config images pull
 
 sudo kubeadm init \
   --pod-network-cidr=10.244.0.0/16 \
@@ -25,4 +25,7 @@ kubectl patch storageclass local-path  -p '{"metadata": {"annotations":{"storage
 sudo mkdir /mnt/data
 kubectl apply -f https://k8s.io/examples/pods/storage/pv-volume.yaml
 kubectl apply -f https://k8s.io/examples/pods/storage/pv-claim.yaml
-kubectl apply -f https://k8s.io/examples/pods/storage/pv-pod.yaml
+kubectl apply -f https://k8s.io/examples/pods/storage/pv-pod.yaml # error -> reinstall manually
+
+# on Control-plane Node
+kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.10.0/nvidia-device-plugin.yml
