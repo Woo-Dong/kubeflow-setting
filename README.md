@@ -22,6 +22,8 @@
     ```sh
     # sudo hostnamectl set-hostname {WORKER_HOST_NAME}
     $ sudo hostnamectl set-hostname kube-worker-cpu-1
+    $ sudo hostnamectl set-hostname kube-worker-gpu-1
+
     $ sudo kubeadm join {MASTER_IP}:6443 \
       --token xxxxxxxxxxx \
       --discovery-token-ca-cert-hash sha256:xxxxxxxxxxxxxxxxxx
@@ -36,14 +38,14 @@
 ### 2-2. Client Setup (Optional)
   - on Worker Node
     ```sh
-    mkdir -p $HOME/.kube
-    scp -p {CLUSTER_USER_ID}@{CLUSTER_IP}:~/.kube/config ~/.kube/config
+    $ mkdir -p $HOME/.kube
+    $ scp -p {MASTER_NODE_USER_ID}@{MASTER_NODE_IP_ADDRESS}:~/.kube/config ~/.kube/config
     ```
 
 ### 3. Install Kubeflow & Deployment
   - on Master Node
     ```sh
-    $ while ! kustomize build kubeflow_install | kubectl apply -f -; do echo    "Retrying to apply resources"; sleep 10; done
+    $ while ! kustomize build kubeflow_install | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
     ```
 
 ### 4. Install Nvidia Driver, nvidia-docker2 on GPU Worker Node (Optional)
@@ -55,16 +57,16 @@
 
   - on Worker Node
     ```sh
-    sudo add-apt-repository -y ppa:graphics-drivers/ppa # type ENTER
-    sudo apt update && sudo apt install -y ubuntu-drivers-common
-    sudo ubuntu-drivers autoinstall
-    sudo reboot # It will be disconnected and take serveral times to reboot itself.
+    $ sudo add-apt-repository -y ppa:graphics-drivers/ppa # type ENTER
+    $ sudo apt update && sudo apt install -y ubuntu-drivers-common
+    $ sudo ubuntu-drivers autoinstall
+    $ sudo reboot # It will be disconnected and takes serveral times to reboot itself.
     ```
 
   - Re-connect to the worker node and,
     ```sh
-    chmod +x 03_worker_gpu_nvidia_docker.sh
-    ./03_worker_gpu_nvidia_docker.sh
+    $ chmod +x 03_worker_gpu_nvidia_docker.sh
+    $ ./03_worker_gpu_nvidia_docker.sh
     ```
     ---
 
@@ -73,5 +75,5 @@
   - on Master Node
     ```sh
     # Port Forwarding Kubeflow Central Dashboard Web browser 
-    sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
+    $ sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
     ```
