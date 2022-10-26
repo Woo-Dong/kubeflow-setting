@@ -1,7 +1,14 @@
 #!/bin/bash
 
-# install docker
+# basic update
 sudo apt-get update -y && sudo apt upgrade -y
+
+# set ntp
+sudo apt install ntp
+sudo service ntp restart
+sudo ntpq -p
+
+# install docker
 sudo apt update -y software-properties-common
 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -25,7 +32,7 @@ sudo rm /etc/containerd/config.toml
 sudo systemctl restart containerd
 
 # hostname setting
-# sudo hostnamectl set-hostname {HOST_NAME} # kube-worker-1
+# sudo hostnamectl set-hostname {HOST_NAME} # ex) kube-master | kube-worker-cpu-1 | kube-worker-gpu-1
 
 # swap off
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
