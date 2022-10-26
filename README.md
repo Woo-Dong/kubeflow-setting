@@ -20,11 +20,9 @@
 ### 2. Join Worker Node with the Cluster
   - on Worker Node
     ```sh
-    # sudo hostnamectl set-hostname {WORKER_HOST_NAME}
-    $ sudo hostnamectl set-hostname kube-worker-cpu-1
-    $ sudo hostnamectl set-hostname kube-worker-gpu-1
+    $ sudo hostnamectl set-hostname {WORKER_HOST_NAME}
 
-    $ sudo kubeadm join {MASTER_IP}:6443 \
+    $ sudo kubeadm join {MASTER_NODE_IP_ADDRESS}:6443 \
       --token xxxxxxxxxxx \
       --discovery-token-ca-cert-hash sha256:xxxxxxxxxxxxxxxxxx
     ```
