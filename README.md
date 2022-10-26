@@ -9,7 +9,7 @@
       $ ./00_kube_setting.sh
       ```
 
-### 1. Kubernetes Cluster Initialization
+### 1. Initialize Kubernetes Cluster
   - on Master Node
     ```sh
     $ sudo hostnamectl set-hostname kube-master
@@ -21,24 +21,23 @@
   - on Worker Node
     ```sh
     $ sudo hostnamectl set-hostname {WORKER_HOST_NAME}
-
     $ sudo kubeadm join {MASTER_NODE_IP_ADDRESS}:6443 \
       --token xxxxxxxxxxx \
       --discovery-token-ca-cert-hash sha256:xxxxxxxxxxxxxxxxxx
     ```
 
-### 2-1. Label Worker Node's Role
-  - on Master Node
-    ```sh
-    $ kubectl label node {WORKER_HOST_NAME} node-role.kubernetes.io/worker=worker
-    ```
+    #### 2-1. Label Worker Node's Role
+      - on Master Node
+        ```sh
+        $ kubectl label node {WORKER_HOST_NAME} node-role.kubernetes.io/worker=worker
+        ```
 
-### 2-2. Client Setup (Optional)
-  - on Worker Node
-    ```sh
-    $ mkdir -p $HOME/.kube
-    $ scp -p {MASTER_NODE_USER_ID}@{MASTER_NODE_IP_ADDRESS}:~/.kube/config ~/.kube/config
-    ```
+    #### 2-2. (Optional) Client Setup
+      - on Worker Node
+        ```sh
+        $ mkdir -p $HOME/.kube
+        $ scp -p {MASTER_NODE_USER_ID}@{MASTER_NODE_IP_ADDRESS}:~/.kube/config ~/.kube/config
+        ```
 
 ### 3. Install Kubeflow & Deployment
   - on Master Node
@@ -46,11 +45,11 @@
     $ while ! kustomize build kubeflow_install | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
     ```
 
-### 4. Install Nvidia Driver, nvidia-docker2 on GPU Worker Node (Optional)
+### 4. (Optional) Install Nvidia Driver, nvidia-docker2 on GPU Worker Node
 
   - on Master Node
     ```sh
-    $ kubectl create -f https://raw.githubusercontent.com/NVIDIA/ k8s-device-plugin/v0.10.0/nvidia-device-plugin.yml
+    $ kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.10.0/nvidia-device-plugin.yml
     ```
 
   - on Worker Node
