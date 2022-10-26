@@ -20,10 +20,29 @@ data:
     staticPasswords:
     - email: user@example.com
       hash: $2y$12$4K/VkmDd1q1Orb3xAt82zu8gk7Ad6ReFR4LCP9UeYE90NLiN9Df72
-      # https://github.com/dexidp/dex/pull/1601/commits
-      # FIXME: Use hashFromEnv instead
       username: user
       userID: "15841185641784"
+
+    - email: dwpark@chunjae.co.kr
+      hash: $2y$12$akjY0az2zMXsItdNh0G6ZOibsoVzS8We0SpPxSRTIlKarVnl9N.eO
+      username: dwpark
+      userID: "15841185641785"
+
+    - email: hwkim@chunjae.co.kr
+      hash: $2y$12$HP3oAJH2roUDeN3w3lOjqeWJJ/eh5QEFm/LWwqvLKxe9mWTLQ7I3u
+      username: hwkim
+      userID: "15841185641786"
+
+    - email: delojmkt@chunjae.co.kr
+      hash: $2y$12$xhY6cshHpqIWuqYsnDUXBuXTXs7jVSgIYYP8B/e.gPrEjGFfS1.BS
+      username: delojmkt
+      userID: "15841185641787"
+
+    - email: parkny@chunjae.co.kr
+      hash: $2y$12$Fkrs1SqhzOhUH34kfjQ3tOC9KZ6Wpym6OMLkg/hOVrg9zwpx815q2
+      username: parkny
+      userID: "15841185641788"
+
     staticClients:
     # https://github.com/dexidp/dex/pull/1664
     - idEnv: OIDC_CLIENT_ID
