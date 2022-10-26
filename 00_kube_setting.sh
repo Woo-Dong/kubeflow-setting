@@ -25,7 +25,7 @@ sudo rm /etc/containerd/config.toml
 sudo systemctl restart containerd
 
 # hostname setting
-sudo hostnamectl set-hostname {HOST_NAME} # kube-worker-1
+# sudo hostnamectl set-hostname {HOST_NAME} # kube-worker-1
 
 # swap off
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
