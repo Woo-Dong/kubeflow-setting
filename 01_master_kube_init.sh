@@ -10,7 +10,7 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 
-# flannel
+# CNI - flannel
 kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
 
 # kustomize
@@ -21,6 +21,10 @@ sudo mv kustomize /usr/local/bin/kustomize
 # CSI - LocalPath provisioner
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.20/deploy/local-path-storage.yaml
 kubectl patch storageclass local-path  -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+# git clone repository
+git clone https://github.com/Woo-Dong/kubeflow-setting.git
+cd kubeflow-setting
 
 # PV, PVC, PV-pod setting
 sudo mkdir /mnt/data

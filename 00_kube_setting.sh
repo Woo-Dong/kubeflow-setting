@@ -3,11 +3,6 @@
 # basic update
 sudo apt-get update -y && sudo apt upgrade -y
 
-# set ntp
-sudo apt install ntp
-sudo service ntp restart
-sudo ntpq -p
-
 # install docker
 sudo apt update -y software-properties-common
 
@@ -19,8 +14,8 @@ sudo apt install -y docker-ce
 sudo usermod -aG docker $USER
 
 # install docker-compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+# sudo curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+# sudo chmod +x /usr/local/bin/docker-compose
 
 # error handling related docker(cgroup)
 echo '{ "exec-opts": ["native.cgroupdriver=systemd"], "log-driver": "json-file", "log-opts": { "max-size": "100m" }, "storage-driver": "overlay2" }' | sudo tee /etc/docker/daemon.json > /dev/null
@@ -30,9 +25,6 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 sudo rm /etc/containerd/config.toml
 sudo systemctl restart containerd
-
-# hostname setting
-# sudo hostnamectl set-hostname {HOST_NAME} # ex) kube-master | kube-worker-cpu-1 | kube-worker-gpu-1
 
 # swap off
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
@@ -56,3 +48,11 @@ echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https:/
 sudo apt-get update
 sudo apt-get install -y kubelet=1.22.15-00 kubeadm=1.22.15-00 &&
 sudo apt-mark hold kubelet kubeadm kubectl
+
+echo -e "\n10.1.1.5 kube-lb" | sudo tee -a /etc/hosts
+echo "10.1.1.133 kube-master-1" | sudo tee -a /etc/hosts
+echo "10.1.1.149 kube-master-2" | sudo tee -a /etc/hosts
+echo "10.1.1.165 kube-master-3" | sudo tee -a /etc/hosts
+echo "10.1.1.134 kube-worker-1" | sudo tee -a /etc/hosts
+echo "10.1.1.150 kube-worker-2" | sudo tee -a /etc/hosts
+echo "10.1.1.166 kube-worker-3" | sudo tee -a /etc/hosts
