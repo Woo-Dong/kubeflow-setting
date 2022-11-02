@@ -45,4 +45,3 @@ subjects:
 - kind: ServiceAccount
   name: monitoring-user
   namespace: kubernetes-dashboard
-  

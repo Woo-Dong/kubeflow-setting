@@ -33,6 +33,7 @@
    * /etc/haproxy/haproxy.cfg
       ```txt
       ...
+      
       frontend kubernetes-master-lb
          bind 0.0.0.0:6443
          option tcplog
@@ -45,11 +46,10 @@
          option tcp-check
          option tcplog
          server kube-master-1 10.1.1.133:6443 check
-         server kube-master-2 10.1.1.149:6443 check
-         server kube-master-3 10.1.1.165:6443 check
 
       frontend http-in
-         bind 0.0.0.0:80
+         bind *:443 ssl crt /etc/haproxy/certs/unified_ssl_dl-service.chunjae-dl.com.pem
+         reqadd X-Forwarded-Proto:\ https
          mode http
          default_backend http-servers
 
@@ -57,7 +57,19 @@
          mode http
          server kube-master-1 10.1.1.133:8080 maxconn 32
          server kube-master-2 10.1.1.149:8080 maxconn 32
-         server kube-master-2 10.1.1.165:8080 maxconn 32
+         server kube-master-3 10.1.1.165:8080 maxconn 32
+
+
+      frontend dashboard-in
+         bind *:8443 ssl crt /etc/haproxy/certs/unified_ssl_dl-service.chunjae-dl.com.pem
+         reqadd X-Forwarded-Proto:\ https
+         mode http
+         default_backend dashboard-servers
+
+      backend dashboard-servers
+         mode http
+         server kube-master-1 10.1.1.133:30522 maxconn 32
+
       ```
 
 
@@ -72,11 +84,13 @@
 ## 4. Init Kubernetes
    * on master-1 node
       ```sh
+      sudo kubeadm config images pull
       sudo kubeadm init \
          --control-plane-endpoint=kube-lb:6443 \
          --pod-network-cidr=10.244.0.0/16 \
          --upload-certs \
-         --kubernetes-version=v1.22.15
+         --kubernetes-version=v1.22.15 
+         # --ignore-preflight-errors=NumCPU
 
       mkdir -p $HOME/.kube
       sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -87,6 +101,7 @@
 ## 5. Join the cluster as a Control-plane node
    * on master-2, master-3 nodes
       ```sh
+      sudo kubeadm config images pull
       sudo kubeadm join kube-lb:6443 \
          --token xxxxxx.xxxxxxxxxxx \
          --discovery-token-ca-cert-hash sha256:xxxxxxxxxxx \
@@ -149,3 +164,19 @@
       ```sh
       sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 &
       ```
+   * Visit https://{external-dns} 
+
+## 10. (Optional) Setup k8s-dashboard
+   * on master-1
+      ```sh
+      kubectl apply -f k8s-dashboard/k8s-dashboard.yaml
+      kubectl apply -f k8s-dashboard/k8s-dashboard-rbac.yaml
+      kubectl apply -f k8s-dashboard/k8s-dashboard-ingress.yaml
+      kubectl apply -f k8s-dashboard/k8s-dashboard-metrics-server.yaml
+      ```
+
+   * Then, get a Login Token
+      ```sh
+      kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
+      ```
+   * And visit https://{external-dns}:8443/ 

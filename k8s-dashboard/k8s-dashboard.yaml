@@ -39,17 +39,11 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - nodePort: 30521
-      name: port80
-      port: 80
-      targetPort: 9090
     - nodePort: 30522
-      name: port443
-      port: 443
+      port: 9090
       targetPort: 9090
   selector:
     k8s-app: kubernetes-dashboard
-
 
 ---
 
@@ -207,8 +201,8 @@ spec:
             - --insecure-bind-address=0.0.0.0
             - --token-ttl=10800
             - --namespace=kubernetes-dashboard
+            - --enable-insecure-login
             # - --auto-generate-certificates
-            # - --enable-insecure-login
             # Uncomment the following line to manually specify Kubernetes API server Host
             # If not specified, Dashboard will attempt to auto discover the API server and connect
             # to it. Uncomment only if the default does not work.

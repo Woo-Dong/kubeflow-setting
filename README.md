@@ -1,6 +1,9 @@
 # kubeflow-setting
 
 ## Getting started
+### concept
+  * 1 Control-plane Node
+  * 3 Worker Node
 
 ### 0. Install Docker & Kubernetes tools
    - on Master & Worker Node
@@ -65,6 +68,11 @@
     $ chmod +x 03_worker_gpu_nvidia_docker.sh
     $ ./03_worker_gpu_nvidia_docker.sh
     ```
+  
+  - Check GPU available
+    ```sh
+    $ kubectl get nodes "-o=custom-columns=NAME:.metadata.name,GPU:.status.allocatable.nvidia\.com/gpu"
+    ```
     ---
 
 
@@ -72,5 +80,7 @@
   - on Master Node
     ```sh
     # Port Forwarding Kubeflow Central Dashboard Web browser 
-    $ sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
+    $ kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 &
+    # If you want port-forward to 80 port..
+    # $ sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
     ```
