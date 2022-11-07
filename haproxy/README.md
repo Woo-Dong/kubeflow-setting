@@ -25,7 +25,29 @@
       sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg-org
       ```
 
-## 2. edit haproxy configuration
+## 2. Add CA SSL certificate
+   * on lb node
+      ```sh
+      sudo mkdir -p /etc/haproxy/certs
+      sudo nano /etc/haproxy/certs/unified_ssl_dl-service.chunjae-dl.com.pem
+      ```
+   * /etc/haproxy/certs/unified_ssl_dl-service.chunjae-dl.com.pem
+      ```sh
+      -----BEGIN PRIVATE KEY-----
+      ...(YOUR PRIVATE KEY)...
+      -----END PRIVATE KEY-----
+      -----BEGIN CERTIFICATE-----
+      ...(YOUR FULL CHAIN CERTIFICATE)...
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      ...(YOUR FULL CHAIN CERTIFICATE)...
+      -----END CERTIFICATE-----
+      -----BEGIN CERTIFICATE-----
+      ...(YOUR FULL CHAIN CERTIFICATE)...
+      -----END CERTIFICATE-----
+      ```
+
+## 2. Edit haproxy configuration
    * on lb node
       ```sh
       sudo nano /etc/haproxy/haproxy.cfg
