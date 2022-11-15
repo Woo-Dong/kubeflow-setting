@@ -19,7 +19,7 @@ data:
     enablePasswordDB: true
     staticPasswords:
     - email: user@example.com
-      hash: $2y$12$4K/VkmDd1q1Orb3xAt82zu8gk7Ad6ReFR4LCP9UeYE90NLiN9Df72
+      hash: $2y$12$a8p6q3WuHU5TNmID/DmLT.m0SYhfYdqwSxGr/AE/m/xdyRAtTu7la
       username: user
       userID: "15841185641784"
 
@@ -42,6 +42,16 @@ data:
       hash: $2y$12$Fkrs1SqhzOhUH34kfjQ3tOC9KZ6Wpym6OMLkg/hOVrg9zwpx815q2
       username: parkny
       userID: "15841185641788"
+
+    - email: hyunsooyein@chunjae.co.kr
+      hash: $2y$12$l8LfXMvMXTaD6ZxvBsFCU.0u.2DlRSjyOksWmIvLjws/eI78m4GsO
+      username: hyunsooyein
+      userID: "15841185641789"
+
+    - email: sungeunkim@chunjae.co.kr
+      hash: $2y$12$6PB9Wusw/g6E24/RW5LPUuE187VQGXENAVqTcJV3tiImgosCbOq9W
+      username: sungeunkim
+      userID: "15841185641790"
 
     staticClients:
     # https://github.com/dexidp/dex/pull/1664

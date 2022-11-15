@@ -21,10 +21,9 @@ spawnerFormDefaults:
     # The list of available standard container Images
     options:
     - kubeflownotebookswg/jupyter-scipy:v1.6.1
-    - kubeflownotebookswg/jupyter-pytorch-full:v1.6.1
-    - kubeflownotebookswg/jupyter-pytorch-cuda-full:v1.6.1
     - kubeflownotebookswg/jupyter-tensorflow-full:v1.6.1
     - kubeflownotebookswg/jupyter-tensorflow-cuda-full:v1.6.1
+    - elyra/kf-notebook:3.12.0
   imageGroupOne:
     # The container Image for the user's Group One Server
     # The annotation `notebooks.kubeflow.org/http-rewrite-uri: /`
@@ -58,7 +57,7 @@ spawnerFormDefaults:
     readOnly: false
   cpu:
     # CPU for user's Notebook
-    value: '0.5'
+    value: '1'
     # Factor by with to multiply request to calculate limit
     # if no limit is set, to disable set "none"
     limitFactor: "1.2"
@@ -84,7 +83,7 @@ spawnerFormDefaults:
         spec:
           resources:
             requests:
-              storage: 10Gi
+              storage: 5Gi
           accessModes:
           - ReadWriteOnce
     readOnly: false
@@ -117,8 +116,8 @@ spawnerFormDefaults:
       vendors:
       - limitsKey: "nvidia.com/gpu"
         uiName: "NVIDIA"
-      - limitsKey: "amd.com/gpu"
-        uiName: "AMD"
+      # - limitsKey: "amd.com/gpu"
+        # uiName: "AMD"
       # Values: "" or a `limits-key` from the vendors list
       vendor: ""
     readOnly: false

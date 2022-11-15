@@ -201,7 +201,7 @@ spec:
             - --insecure-bind-address=0.0.0.0
             - --namespace=kubernetes-dashboard
             - --enable-insecure-login
-            # - --token-ttl=10800
+            - --token-ttl=1209600
             # - --auto-generate-certificates
             # Uncomment the following line to manually specify Kubernetes API server Host
             # If not specified, Dashboard will attempt to auto discover the API server and connect

@@ -57,7 +57,7 @@
 
   - on Worker Node
     ```sh
-    $ sudo add-apt-repository -y ppa:graphics-drivers/ppa # type ENTER
+    $ sudo add-apt-repository -y ppa:graphics-drivers/ppa
     $ sudo apt update && sudo apt install -y ubuntu-drivers-common
     $ sudo ubuntu-drivers autoinstall
     $ sudo reboot # It will be disconnected and takes serveral times to reboot itself.
@@ -66,7 +66,7 @@
   - Re-connect to the worker node and,
     ```sh
     $ chmod +x 03_worker_gpu_nvidia_docker.sh
-    $ ./03_worker_gpu_nvidia_docker.sh
+    $ ./03_worker_gpu_nvidia_docker.sh # type Y
     ```
   
   - Check GPU available

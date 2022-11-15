@@ -78,8 +78,6 @@
       backend http-servers
          mode http
          server kube-master-1 10.1.1.133:8080 maxconn 32
-         server kube-master-2 10.1.1.149:8080 maxconn 32
-         server kube-master-3 10.1.1.165:8080 maxconn 32
 
 
       frontend dashboard-in
@@ -192,9 +190,8 @@
    * on master-1
       ```sh
       kubectl apply -f k8s-dashboard/k8s-dashboard.yaml
-      kubectl apply -f k8s-dashboard/k8s-dashboard-rbac.yaml
-      kubectl apply -f k8s-dashboard/k8s-dashboard-ingress.yaml
-      kubectl apply -f k8s-dashboard/k8s-dashboard-metrics-server.yaml
+      kubectl apply -f k8s-dashboard/metrics-server.yaml
+      kubectl apply -f k8s-dashboard/rbac.yaml
       ```
 
    * Then, get a Login Token

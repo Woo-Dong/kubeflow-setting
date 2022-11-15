@@ -51,8 +51,13 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 echo -e "\n10.1.1.5 kube-lb" | sudo tee -a /etc/hosts
 echo "10.1.1.133 kube-master-1" | sudo tee -a /etc/hosts
-echo "10.1.1.149 kube-master-2" | sudo tee -a /etc/hosts
-echo "10.1.1.165 kube-master-3" | sudo tee -a /etc/hosts
-echo "10.1.1.134 kube-worker-1" | sudo tee -a /etc/hosts
-echo "10.1.1.150 kube-worker-2" | sudo tee -a /etc/hosts
-echo "10.1.1.166 kube-worker-3" | sudo tee -a /etc/hosts
+echo "10.1.1.165 kube-master-2" | sudo tee -a /etc/hosts
+echo "10.1.1.166 kube-master-3" | sudo tee -a /etc/hosts
+
+echo "10.1.1.135 kube-worker-cpu-1" | sudo tee -a /etc/hosts
+echo "10.1.1.168 kube-worker-cpu-2" | sudo tee -a /etc/hosts
+
+echo "10.1.1.138 kube-worker-gpu-1" | sudo tee -a /etc/hosts
+echo "10.1.1.170 kube-worker-gpu-2" | sudo tee -a /etc/hosts
+echo "10.1.1.139 kube-worker-gpu-3" | sudo tee -a /etc/hosts
+echo "10.1.1.171 kube-worker-gpu-4" | sudo tee -a /etc/hosts
