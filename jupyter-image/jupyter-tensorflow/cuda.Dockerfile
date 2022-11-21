@@ -1,6 +1,5 @@
 # Use the respective Makefile to pass the appropriate BASE_IMG and build the image correctly
-ARG BASE_IMG=<jupyter>
-FROM $BASE_IMG
+FROM kubeflownotebookswg/jupyter:v1.6.0-rc.0
 
 USER root
 
@@ -79,6 +78,9 @@ RUN ln -s $(which python3) /usr/local/bin/python
 USER $NB_UID
 
 # install - requirements.txt
-COPY --chown=jovyan:users requirements.txt /tmp/requirements.txt
+COPY --chown=jovyan:users gpu-requirements.txt /tmp/requirements.txt
+
+RUN python3 -m pip install --upgrade pip
+
 RUN python3 -m pip install -r /tmp/requirements.txt --quiet --no-cache-dir \
     && rm -f /tmp/requirements.txt

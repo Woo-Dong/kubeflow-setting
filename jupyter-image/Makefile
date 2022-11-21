@@ -1,13 +1,8 @@
 TAG ?= $(shell git describe --tags --always --dirty)
-REGISTRY ?= 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/dl-service-chunjae
+ACCOUNT_ID ?= $(shell git describe --account-id --always --dirty)
+REGISTRY ?= ${ACCOUNT_ID}.dkr.ecr.ap-northeast-2.amazonaws.com
 
 docker-build-all:
-	@echo "\nBuilding base image...\n"
-	make docker-build -C base TAG=${TAG}
-	
-	@echo "\nBuilding jupyter image...\n"
-	make docker-build -C jupyter TAG=${TAG} 
-
 	@echo "\nBuilding jupyter-scipy image...\n"
 	make docker-build -C jupyter-scipy TAG=${TAG} 
 
@@ -21,7 +16,8 @@ docker-build-all:
 
 docker-push-all:
 	for img in jupyter-scipy \
-		jupyter-tensorflow jupyter-tensorflow-cuda; do \
+		jupyter-tensorflow \
+		jupyter-tensorflow-cuda; do \
 		docker tag $$img:${TAG} ${REGISTRY}/$$img:${TAG} ; \
 		docker push ${REGISTRY}/$$img:${TAG} ; \
 	done

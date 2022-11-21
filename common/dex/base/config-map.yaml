@@ -18,9 +18,9 @@ data:
       skipApprovalScreen: true
     enablePasswordDB: true
     staticPasswords:
-    - email: user@example.com
-      hash: $2y$12$a8p6q3WuHU5TNmID/DmLT.m0SYhfYdqwSxGr/AE/m/xdyRAtTu7la
-      username: user
+    - email: guest@chunjae.co.kr
+      hash: $2y$12$MGmm7M4Y42MzPF6B1S8yUeH49y5Xl2N.sCC2zzYpPCizGLppXVtl2
+      username: guest
       userID: "15841185641784"
 
     - email: dwpark@chunjae.co.kr
