@@ -21,6 +21,9 @@
     # $ sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
     ```
 
+## 3. Setting Custom Jupyter / Docker Image for pulling them at Notebook/KFP 
+* See more ReADME info in the `jupyter-image` directory.
+
 
 ## Third-Party
 
