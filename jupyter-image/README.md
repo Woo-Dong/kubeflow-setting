@@ -1,6 +1,23 @@
 
 ## Setting Notebooks for pulling Image from Private Registry(ECR)
 
+### 1. Set CronJob
+1. edit your info below variables in `ecr-secret-helper.yaml` file
+    ```txt
+    <NAMESPACE>
+    <AWS_ACCESS_KEY_ID>
+    <AWS_SECRET_ACCESS_KEY>
+    <ACCOUNT_ID>
+    <ECR_REPOSITORY>
+    ```
+
+2. apply config
+    ```sh
+    kubectl apply -f ecr-secret-helper.yaml
+    ```
+
+
+### 2. on Manual
 1. Get Docker config json file
     * prerequisites
         - aws-cli
