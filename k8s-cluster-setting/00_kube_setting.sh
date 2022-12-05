@@ -49,6 +49,7 @@ sudo apt-get update
 sudo apt-get install -y kubelet=1.22.15-00 kubeadm=1.22.15-00 &&
 sudo apt-mark hold kubelet kubeadm kubectl
 
+# modify ip address on your eni
 echo -e "\n10.1.1.5 kube-lb" | sudo tee -a /etc/hosts
 echo "10.1.1.133 kube-master-1" | sudo tee -a /etc/hosts
 echo "10.1.1.165 kube-master-2" | sudo tee -a /etc/hosts

@@ -1,5 +1,6 @@
 
 # Getting Started
+* Concept: 1 LoadBalancer + 3 Master Nodes + 6 Worker Nodes
 
 ## 0. Prerequisites
 * Install AWS-cli (v2)
@@ -22,17 +23,20 @@
 
     export KUBE_LB_ADDRESS="10.1.1.5"
     export KUBE_MASTER_1_ADDRESS="10.1.1.133"
-    export KUBE_MASTER_2_ADDRESS="10.1.1.149"
-    export KUBE_MASTER_3_ADDRESS="10.1.1.165"
-    export KUBE_WORKER_1_ADDRESS="10.1.1.134"
-    export KUBE_WORKER_2_ADDRESS="10.1.1.150"
-    export KUBE_WORKER_3_ADDRESS="10.1.1.166"
+    export KUBE_MASTER_2_ADDRESS="10.1.1.165"
+    export KUBE_MASTER_3_ADDRESS="10.1.1.166"
+    export KUBE_WORKER_CPU_1_ADDRESS="10.1.1.135"
+    export KUBE_WORKER_CPU_2_ADDRESS="10.1.1.168"
+    export KUBE_WORKER_GPU_1_ADDRESS="10.1.1.138"
+    export KUBE_WORKER_GPU_2_ADDRESS="10.1.1.170"
+    export KUBE_WORKER_GPU_3_ADDRESS="10.1.1.139"
+    export KUBE_WORKER_GPU_4_ADDRESS="10.1.1.171"
     ```
 
 
 ## 2. Run "create_ec2_instance.sh"
 * bash commands
     ```sh
-    chmod +x 400 create_ec2_instance.sh
+    chmod +x create_ec2_instance.sh
     ./create_ec2_instance.sh
     ```
