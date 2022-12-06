@@ -168,17 +168,15 @@
     kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.20/deploy/local-path-storage.yaml
     kubectl patch storageclass local-path  -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
-    # git clone repository
-    git clone https://github.com/Woo-Dong/kubeflow-setting.git
-    cd kubeflow-setting
-
-    # PV, PVC, PV-pod setting
+    # Persistent Volume Setting
     sudo mkdir /mnt/data
-    kubectl apply -f pv/pv-volume.yaml
-    kubectl apply -f pv/pv-claim.yaml
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/pv-volume.yaml
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/pv-claim.yaml
     sleep 10
-    kubectl apply -f pv/pv-pod.yaml
-
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/pv-pod.yaml
+    ```
+* Install Kubeflow Packages on master-1 node
+    ```sh
     # install kubeflow package
     while ! kustomize build kubeflow_install | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
     ```
@@ -186,16 +184,18 @@
 ## 9. Port-Forwarding
 * on master-1, master-2, master-3 nodes
     ```sh
-    sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 &
+    kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 &
+    # If you port-forward into 80 port...
+    # sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
     ```
 * Visit https://{external-dns} 
 
 ## 10. (Optional) Setup k8s-dashboard
 * on master-1
     ```sh
-    kubectl apply -f k8s-dashboard/k8s-dashboard.yaml
-    kubectl apply -f k8s-dashboard/metrics-server.yaml
-    kubectl apply -f k8s-dashboard/rbac.yaml
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-dashboard/k8s-dashboard.yaml
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-dashboard/metrics-server.yaml
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-dashboard/rbac.yaml
     ```
 
 * Then, get a Login Token
