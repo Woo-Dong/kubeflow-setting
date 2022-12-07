@@ -1,56 +1,43 @@
-# Sample installation
+# Deploying Kubeflow with RDS and S3 using Kustomize
 
-1. Create an EKS cluster
+## Getting Started
+---
 
-Run this command to create EKS cluster
-```
-eksctl create cluster \
---name AWS-KFP \
---version 1.17 \
---region us-west-2 \
---nodegroup-name linux-nodes \
---node-type m5.xlarge \
---nodes 2 \
---nodes-min 1 \
---nodes-max 4 \
---managed
-```
+### 1. Before kustomize kubeflow-setting, check accessKey and secretKey at default minio-artifact and change with your AWS ACCESS KEY
+* the file directory is `apps/pipeline/upstream/third-party/minio/mlpipeline-minio-artifact-secret.yaml`
+  ```yaml
+  kind: Secret
+  apiVersion: v1
+  metadata:
+    name: mlpipeline-minio-artifact
+  stringData:
+    accesskey: <YOUR_AWS_ACCESS_ID>
+    secretkey: <YOUR_AWS_SECRET_KEY>
+  ```
 
-2. Prepare S3
+### 2. Edit 3 .env files
+  * 1-1. `secret.env`
+    ```txt
+    username=YOUR_RDS_USERNAME
+    password=YOUR_RDS_PASSWORD
+    ```
 
-Create S3 bucket. [Console](https://console.aws.amazon.com/s3/home).
+  * 1-2. `params.env`
+    ```txt
+    dbHost=YOUR_RDS_ENDPOINT_URL
 
-Run this command to create S3 bucket by changing `<YOUR_S3_BUCKET_NAME>` to your prefer s3 bucket name.
+    bucketName=YOUR_S3_BUCKET_NAME
+    minioServiceHost=s3.amazonaws.com
+    minioServiceRegion=ap-northeast-2
+    ```
 
-```
-export S3_BUCKET=<YOUR_S3_BUCKET_NAME>
-export AWS_REGION=us-west-2
-aws s3 mb s3://$S3_BUCKET --region $AWS_REGION
-```
+  * 1-3. minio-artifact-secret-patch.env
+    ```txt
+    accesskey=YOUR_AWS_ACCESS_ID
+    secretkey=YOUR_AWS_SECRET_KEY
+    ```
 
-3. Prepare RDS
-
-Follow this [doc](https://awslabs.github.io/kubeflow-manifests/docs/deployment/rds-s3/guide/) to set up AWS RDS instance.
-
-4. Customize your values
-- Edit [params.env](params.env), [secret.env](secret.env) and [minio-artifact-secret-patch.env](minio-artifact-secret-patch.env)
-
-5. Install
-
-```
-kubectl apply -k ../../cluster-scoped-resources
-# If upper one action got failed, e.x. you used wrong value, try delete, fix and apply again
-# kubectl delete -k ../../cluster-scoped-resources
-
-kubectl wait crd/applications.app.k8s.io --for condition=established --timeout=60s
-
-kubectl apply -k ./
-# If upper one action got failed, e.x. you used wrong value, try delete, fix and apply again
-# kubectl delete -k ./
-
-kubectl wait applications/pipeline -n kubeflow --for condition=Ready --timeout=1800s
-
-kubectl port-forward -n kubeflow svc/ml-pipeline-ui 8080:80
-```
-
-Now you can access via `localhost:8080`
+### 2. Kustomize build & kubectl apply
+  ```txt
+  kustomize build kubeflow-setting/aws | kubectl apply -f -
+  ```
