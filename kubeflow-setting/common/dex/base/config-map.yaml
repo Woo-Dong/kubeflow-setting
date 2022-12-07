@@ -23,35 +23,6 @@ data:
       username: guest
       userID: "15841185641784"
 
-    - email: dwpark@chunjae.co.kr
-      hash: $2y$12$akjY0az2zMXsItdNh0G6ZOibsoVzS8We0SpPxSRTIlKarVnl9N.eO
-      username: dwpark
-      userID: "15841185641785"
-
-    - email: hwkim@chunjae.co.kr
-      hash: $2y$12$HP3oAJH2roUDeN3w3lOjqeWJJ/eh5QEFm/LWwqvLKxe9mWTLQ7I3u
-      username: hwkim
-      userID: "15841185641786"
-
-    - email: delojmkt@chunjae.co.kr
-      hash: $2y$12$xhY6cshHpqIWuqYsnDUXBuXTXs7jVSgIYYP8B/e.gPrEjGFfS1.BS
-      username: delojmkt
-      userID: "15841185641787"
-
-    - email: parkny@chunjae.co.kr
-      hash: $2y$12$Fkrs1SqhzOhUH34kfjQ3tOC9KZ6Wpym6OMLkg/hOVrg9zwpx815q2
-      username: parkny
-      userID: "15841185641788"
-
-    - email: hyunsooyein@chunjae.co.kr
-      hash: $2y$12$l8LfXMvMXTaD6ZxvBsFCU.0u.2DlRSjyOksWmIvLjws/eI78m4GsO
-      username: hyunsooyein
-      userID: "15841185641789"
-
-    - email: sungeunkim@chunjae.co.kr
-      hash: $2y$12$6PB9Wusw/g6E24/RW5LPUuE187VQGXENAVqTcJV3tiImgosCbOq9W
-      username: sungeunkim
-      userID: "15841185641790"
 
     staticClients:
     # https://github.com/dexidp/dex/pull/1664
