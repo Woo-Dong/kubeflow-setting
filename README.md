@@ -1,9 +1,29 @@
 # kubeflow-setting
 
-## Getting started
+## Main Folder Directory Structure
+├── jupyter-image  
+│   ├── Makefile                # `make` All Jupyter Images build & push on the ECR Repositories  
+│   └── ecr-secret-helper.yaml  # `kubectl apply` CronJob each namespace  
+├── k8s-cluster-setting  
+│   ├── aws-ec2-cluster         # IaC(aws-cli)  
+│   ├── haproxy  
+│   └── persistent-volume       # `kubectl apply` pv, pvc, pv-pod resources  
+├── k8s-dashboard               # `kubectl apply` k8s-dashboard  
+├── kubeflow-setting  
+│   ├── apps   
+│   ├── aws                     # `kustomize build` & `kubectl apply` deployment with AWS S3 and RDS  
+│   ├── common  
+│   ├── contrib  
+│   └── kustomization.yaml      # `kustomize build` & `kubectl apply` kubeflow apps  
+├── utils                       # etc  
+└── README.md  
+
+
+
+# Getting started
 
 ## 1. Setting Kubernetes Cluster
-* See more ReADME info in the `k8s-cluster-setting` directory.
+* See more README info in the `k8s-cluster-setting` directory.
 
 
 ## 2. Install Kubeflow & Deployment
@@ -21,11 +41,14 @@
     # $ sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
     ```
 
+* If you want deploy with AWS S3 and RDS, see more README info in the `kubeflow-setting/aws` directory..
+
 ## 3. Setting Custom Jupyter / Docker Image for pulling them at Notebook/KFP 
-* See more ReADME info in the `jupyter-image` directory.
+* See more README info in the `jupyter-image` directory.
 
 
-## Third-Party
+
+## 4. Third-Party
 
 ### K8s-dashboard
 * on Master Node

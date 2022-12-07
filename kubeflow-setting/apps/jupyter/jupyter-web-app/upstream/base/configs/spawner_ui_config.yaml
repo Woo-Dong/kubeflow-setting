@@ -17,12 +17,12 @@
 spawnerFormDefaults:
   image:
     # The container Image for the user's Jupyter Notebook
-    value: 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter-scipy:20221122
+    value: 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter/scipy:20221130
     # The list of available standard container Images
     options:
-    - 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter-scipy:20221122
-    - 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter-tensorflow:20221122
-    - 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter-tensorflow-cuda:20221122
+    - 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter/scipy:20221130
+    - 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter/tensorflow:20221130
+    - 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter/tensorflow-cuda:20221130
     - elyra/kf-notebook:3.12.0
   imageGroupOne:
     # The container Image for the user's Group One Server
