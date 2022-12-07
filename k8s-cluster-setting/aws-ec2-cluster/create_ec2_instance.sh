@@ -123,8 +123,8 @@ Cyan='\033[0;36m'
 NC='\033[0m'
 
 # iterator creating ec2 instances
-# var=( lb master-1 master-2 master-3 worker-cpu-1 worker-cpu-2 worker-gpu-1 worker-gpu-2 worker-gpu-3 worker-gpu-4 )
-var=( lb master-1 worker-cpu-1 worker-cpu-2 worker-gpu-1 )
+var=( lb master-1 master-2 master-3 worker-cpu-1 worker-cpu-2 worker-gpu-1 worker-gpu-2 worker-gpu-3 worker-gpu-4 )
+# var=( lb master-1 worker-cpu-1 worker-cpu-2 worker-gpu-1 )
 for instance in "${var[@]}"
 do
     echo -e "${Green}${instance} creating...${NC}"
