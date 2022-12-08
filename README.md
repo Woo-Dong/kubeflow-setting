@@ -1,22 +1,22 @@
 # kubeflow-setting
 
 ## Main Folder Directory Structure
-├── jupyter-image  
-│   ├── Makefile                # `make` All Jupyter Images build & push on the ECR Repositories  
-│   └── ecr-secret-helper.yaml  # `kubectl apply` CronJob each namespace  
-├── k8s-cluster-setting  
-│   ├── aws-ec2-cluster         # IaC(aws-cli)  
-│   ├── haproxy  
-│   └── persistent-volume       # `kubectl apply` pv, pvc, pv-pod resources  
-├── k8s-dashboard               # `kubectl apply` k8s-dashboard  
-├── kubeflow-setting  
-│   ├── apps   
-│   ├── aws                     # `kustomize build` & `kubectl apply` deployment with AWS S3 and RDS  
-│   ├── common  
-│   ├── contrib  
-│   └── kustomization.yaml      # `kustomize build` & `kubectl apply` kubeflow apps  
-├── utils                       # etc  
-└── README.md  
+    ├── jupyter-image  
+    │   ├── Makefile                # make All Jupyter Images build & push on the ECR Repositories  
+    │   └── ecr-secret-helper.yaml  # kubectl apply CronJob each namespace  
+    ├── k8s-cluster-setting  
+    │   ├── aws-ec2-cluster         # IaC(aws-cli)  
+    │   ├── haproxy  
+    │   └── persistent-volume       # kubectl apply pv, pvc, pv-pod resources  
+    ├── k8s-dashboard               # kubectl apply k8s-dashboard  
+    ├── kubeflow-setting  
+    │   ├── apps   
+    │   ├── aws                     # kustomize build & kubectl apply deployment with AWS S3 and RDS  
+    │   ├── common  
+    │   ├── contrib  
+    │   └── kustomization.yaml      # kustomize build & kubectl apply kubeflow apps  
+    ├── utils                       # etc  
+    └── README.md  
 
 
 
