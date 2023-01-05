@@ -3,7 +3,7 @@ sudo kubeadm config images pull
 
 sudo kubeadm init \
   --pod-network-cidr=10.244.0.0/16 \
-  --kubernetes-version=v1.22.15
+  --kubernetes-version=v1.25.5
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -18,16 +18,17 @@ wget https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F
 tar -zxvf kustomize_v3.10.0_linux_amd64.tar.gz
 sudo mv kustomize /usr/local/bin/kustomize
 
-# CSI - LocalPath provisioner
-kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.20/deploy/local-path-storage.yaml
-kubectl patch storageclass local-path  -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+# CSI - nfs-storage
+sudo apt-get install -y nfs-common nfs-kernel-server rpcbind portmap
+sudo mkdir /mnt/shared
+sudo chmod 777 /mnt/shared
+echo "/mnt/shared *(rw,sync,no_subtree_check)" | sudo tee -a /etc/exports
+sudo exportfs -a
+sudo systemctl restart nfs-kernel-server
 
 # PV, PVC, PV-pod setting
-sudo mkdir /mnt/data
 kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/pv-volume.yaml
 kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/pv-claim.yaml
-sleep 10
-kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/pv-pod.yaml
 
 # Nvidia-device-plugin (optional)
 # kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.10.0/nvidia-device-plugin.yml

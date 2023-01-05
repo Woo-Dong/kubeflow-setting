@@ -113,7 +113,7 @@
         --control-plane-endpoint=kube-lb:6443 \
         --pod-network-cidr=10.244.0.0/16 \
         --upload-certs \
-        --kubernetes-version=v1.22.15 
+        --kubernetes-version=v1.25.5 
         # --ignore-preflight-errors=NumCPU
 
     mkdir -p $HOME/.kube
@@ -164,17 +164,16 @@
     tar -zxvf kustomize_v3.10.0_linux_amd64.tar.gz
     sudo mv kustomize /usr/local/bin/kustomize
 
-    # CSI - LocalPath provisioner
-    kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.20/deploy/local-path-storage.yaml
-    kubectl patch storageclass local-path  -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-
-    # Persistent Volume Setting
-    sudo mkdir /mnt/data
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/pv-volume.yaml
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/pv-claim.yaml
-    sleep 10
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/pv-pod.yaml
+    # CSI - nfs-storage
+    sudo apt-get install -y nfs-common nfs-kernel-server rpcbind portmap
+    sudo mkdir /mnt/shared
+    sudo chmod 777 /mnt/shared
+    echo "/mnt/shared *(rw,sync,no_subtree_check)" | sudo tee -a /etc/exports
+    sudo exportfs -a
+    sudo systemctl restart nfs-kernel-server
     ```
+
+
 * Install Kubeflow Packages on master-1 node
     ```sh
     # install kubeflow package
