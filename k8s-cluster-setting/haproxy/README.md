@@ -165,7 +165,7 @@
     sudo mv kustomize /usr/local/bin/kustomize
 
     # CSI - nfs-storage
-    sudo apt-get install -y nfs-common nfs-kernel-server rpcbind portmap
+    sudo apt-get install -y nfs-kernel-server rpcbind portmap
     sudo mkdir /nfs-vol
     sudo chmod 777 -R /nfs-vol
     echo "/nfs-vol *(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
