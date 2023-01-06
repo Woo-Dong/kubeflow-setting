@@ -166,18 +166,30 @@
 
     # CSI - nfs-storage
     sudo apt-get install -y nfs-common nfs-kernel-server rpcbind portmap
-    sudo mkdir /mnt/shared
-    sudo chmod 777 /mnt/shared
-    echo "/mnt/shared *(rw,sync,no_subtree_check)" | sudo tee -a /etc/exports
+    sudo mkdir /nfs-vol
+    sudo chmod 777 -R /nfs-vol
+    echo "/nfs-vol *(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
     sudo exportfs -a
     sudo systemctl restart nfs-kernel-server
+    sudo systemctl enable nfs-kernel-server
+
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-rbac.yaml
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-driverinfo.yaml
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-controller.yaml
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-node.yaml
+
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/dynamic-pvc.yaml
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/storageclass.yaml
+    
+
+    kubectl patch storageclass nfs-csi -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     ```
 
 
 * Install Kubeflow Packages on master-1 node
     ```sh
     # install kubeflow package
-    while ! kustomize build kubeflow_install | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
+    while ! kustomize build kubeflow-setting | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
     ```
 
 ## 9. Port-Forwarding
