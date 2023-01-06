@@ -160,9 +160,9 @@
     kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
 
     # kustomize
-    wget https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv3.10.0/kustomize_v3.10.0_linux_amd64.tar.gz
-    tar -zxvf kustomize_v3.10.0_linux_amd64.tar.gz
-    sudo mv kustomize /usr/local/bin/kustomize
+    wget https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64
+	chmod +x kustomize_3.2.0_linux_amd64
+	sudo mv kustomize_3.2.0_linux_amd64 /usr/local/bin/kustomize
 
     # CSI - nfs-storage
     sudo apt-get install -y nfs-kernel-server rpcbind portmap
