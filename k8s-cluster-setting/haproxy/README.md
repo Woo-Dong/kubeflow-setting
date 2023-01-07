@@ -113,7 +113,7 @@
         --control-plane-endpoint=kube-lb:6443 \
         --pod-network-cidr=10.244.0.0/16 \
         --upload-certs \
-        --kubernetes-version=v1.25.5 
+        --kubernetes-version=v1.24.9 
         # --ignore-preflight-errors=NumCPU
 
     mkdir -p $HOME/.kube
