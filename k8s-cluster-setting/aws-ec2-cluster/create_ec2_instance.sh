@@ -44,7 +44,7 @@ INSTANCES["lb","VOLUME_SIZE"]=16
 # kube-master-1
 INSTANCES["master-1","TAG_NAME"]='kube-cluster-ha-master-1'
 INSTANCES["master-1","IP"]=${KUBE_MASTER_1_ADDRESS}
-INSTANCES["master-1","INSTANCE_TYPE"]='t3.small'
+INSTANCES["master-1","INSTANCE_TYPE"]='t3.medium'
 INSTANCES["master-1","SUBNET_ID"]=${SUBNET_ID_PRIVATE_1}
 INSTANCES["master-1","SECURITY_GROUP_ID"]=${SECURITY_GROUP_ID_CONTROLPLANE}
 INSTANCES["master-1","ASSOCIATE_PUBLIC_IP"]=false
@@ -56,7 +56,7 @@ INSTANCES["master-2","INSTANCE_TYPE"]='t3.small'
 INSTANCES["master-2","SUBNET_ID"]=${SUBNET_ID_PRIVATE_3}
 INSTANCES["master-2","SECURITY_GROUP_ID"]=${SECURITY_GROUP_ID_CONTROLPLANE}
 INSTANCES["master-2","ASSOCIATE_PUBLIC_IP"]=false
-INSTANCES["master-2","VOLUME_SIZE"]=128
+INSTANCES["master-2","VOLUME_SIZE"]=16
 # kube-master-3
 INSTANCES["master-3","TAG_NAME"]='kube-cluster-ha-master-3'
 INSTANCES["master-3","IP"]=${KUBE_MASTER_3_ADDRESS}
@@ -64,7 +64,7 @@ INSTANCES["master-3","INSTANCE_TYPE"]='t3.small'
 INSTANCES["master-3","SUBNET_ID"]=${SUBNET_ID_PRIVATE_3}
 INSTANCES["master-3","SECURITY_GROUP_ID"]=${SECURITY_GROUP_ID_CONTROLPLANE}
 INSTANCES["master-3","ASSOCIATE_PUBLIC_IP"]=false
-INSTANCES["master-3","VOLUME_SIZE"]=128
+INSTANCES["master-3","VOLUME_SIZE"]=16
 
 # kube-worker-cpu-1
 INSTANCES["worker-cpu-1","TAG_NAME"]='kube-cluster-ha-worker-cpu-1'
@@ -90,7 +90,7 @@ INSTANCES["worker-gpu-1","INSTANCE_TYPE"]='g3.4xlarge'
 INSTANCES["worker-gpu-1","SUBNET_ID"]=${SUBNET_ID_PRIVATE_1}
 INSTANCES["worker-gpu-1","SECURITY_GROUP_ID"]=${SECURITY_GROUP_ID_WORKER}
 INSTANCES["worker-gpu-1","ASSOCIATE_PUBLIC_IP"]=false
-INSTANCES["worker-gpu-1","VOLUME_SIZE"]=32
+INSTANCES["worker-gpu-1","VOLUME_SIZE"]=64
 # kube-worker-gpu-2
 INSTANCES["worker-gpu-2","TAG_NAME"]='kube-cluster-ha-worker-gpu-2'
 INSTANCES["worker-gpu-2","IP"]=${KUBE_WORKER_GPU_2_ADDRESS}
@@ -98,15 +98,15 @@ INSTANCES["worker-gpu-2","INSTANCE_TYPE"]='g3.4xlarge'
 INSTANCES["worker-gpu-2","SUBNET_ID"]=${SUBNET_ID_PRIVATE_3}
 INSTANCES["worker-gpu-2","SECURITY_GROUP_ID"]=${SECURITY_GROUP_ID_WORKER}
 INSTANCES["worker-gpu-2","ASSOCIATE_PUBLIC_IP"]=false
-INSTANCES["worker-gpu-2","VOLUME_SIZE"]=32
-# kube-worker-gpu-3
+INSTANCES["worker-gpu-2","VOLUME_SIZE"]=64
+
 INSTANCES["worker-gpu-3","TAG_NAME"]='kube-cluster-ha-worker-gpu-3'
 INSTANCES["worker-gpu-3","IP"]=${KUBE_WORKER_GPU_3_ADDRESS}
 INSTANCES["worker-gpu-3","INSTANCE_TYPE"]='g3.4xlarge'
 INSTANCES["worker-gpu-3","SUBNET_ID"]=${SUBNET_ID_PRIVATE_1}
 INSTANCES["worker-gpu-3","SECURITY_GROUP_ID"]=${SECURITY_GROUP_ID_WORKER}
 INSTANCES["worker-gpu-3","ASSOCIATE_PUBLIC_IP"]=false
-INSTANCES["worker-gpu-3","VOLUME_SIZE"]=32
+INSTANCES["worker-gpu-3","VOLUME_SIZE"]=64
 # kube-worker-gpu-4
 INSTANCES["worker-gpu-4","TAG_NAME"]='kube-cluster-ha-worker-gpu-4'
 INSTANCES["worker-gpu-4","IP"]=${KUBE_WORKER_GPU_4_ADDRESS}
@@ -114,7 +114,7 @@ INSTANCES["worker-gpu-4","INSTANCE_TYPE"]='g3.4xlarge'
 INSTANCES["worker-gpu-4","SUBNET_ID"]=${SUBNET_ID_PRIVATE_3}
 INSTANCES["worker-gpu-4","SECURITY_GROUP_ID"]=${SECURITY_GROUP_ID_WORKER}
 INSTANCES["worker-gpu-4","ASSOCIATE_PUBLIC_IP"]=false
-INSTANCES["worker-gpu-4","VOLUME_SIZE"]=32
+INSTANCES["worker-gpu-4","VOLUME_SIZE"]=64
 
 
 Red='\033[0;31m'
@@ -124,7 +124,6 @@ NC='\033[0m'
 
 # iterator creating ec2 instances
 var=( lb master-1 master-2 master-3 worker-cpu-1 worker-cpu-2 worker-gpu-1 worker-gpu-2 worker-gpu-3 worker-gpu-4 )
-# var=( lb master-1 worker-cpu-1 worker-cpu-2 worker-gpu-1 )
 for instance in "${var[@]}"
 do
     echo -e "${Green}${instance} creating...${NC}"
