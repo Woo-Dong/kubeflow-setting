@@ -52,14 +52,12 @@
 
   - on Master Node
     ```sh
-    kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.10.0/nvidia-device-plugin.yml
+    kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.13.0/nvidia-device-plugin.yml
     ```
 
   - on Worker Node
     ```sh
-    sudo add-apt-repository -y ppa:graphics-drivers/ppa
-    sudo apt update && sudo apt install -y ubuntu-drivers-common
-    sudo ubuntu-drivers autoinstall
+    sudo apt install nvidia-driver-515 -y
     sudo reboot # It will be disconnected and takes serveral times to reboot itself.
     ```
 
@@ -69,6 +67,29 @@
     ./03_worker_gpu_nvidia_docker.sh # type Y
     ```
   
+  - make a config file on `/etc/containerd/config.toml`
+    ```toml
+    version = 2
+    [plugins]
+      [plugins."io.containerd.grpc.v1.cri"]
+        [plugins."io.containerd.grpc.v1.cri".containerd]
+          default_runtime_name = "nvidia"
+
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+            [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+              privileged_without_host_devices = false
+              runtime_engine = ""
+              runtime_root = ""
+              runtime_type = "io.containerd.runc.v2"
+              [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
+                BinaryName = "/usr/bin/nvidia-container-runtime"
+    ```
+    and
+    ```sh
+    sudo systemctl restart containerd
+    sudo reboot
+    ```
+
   - Check GPU available
     ```sh
     kubectl get nodes "-o=custom-columns=NAME:.metadata.name,GPU:.status.allocatable.nvidia\.com/gpu"
