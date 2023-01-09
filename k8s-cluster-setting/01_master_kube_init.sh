@@ -15,20 +15,26 @@ kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Doc
 
 # kustomize
 wget https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv3.10.0/kustomize_v3.10.0_linux_amd64.tar.gz
-tar -zxvf kustomize_v3.10.0_linux_amd64.tar.gz
+tar -zxvf kustomize_v3.2.0_linux_amd64.tar.gz
 sudo mv kustomize /usr/local/bin/kustomize
 
-# CSI - nfs-storage
-sudo apt-get install -y nfs-common nfs-kernel-server rpcbind portmap
-sudo mkdir /mnt/shared
-sudo chmod 777 /mnt/shared
-echo "/mnt/shared *(rw,sync,no_subtree_check)" | sudo tee -a /etc/exports
+# NFS Server Setting
+sudo apt-get install -y nfs-kernel-server rpcbind portmap
+sudo mkdir /nfs-vol
+sudo chmod 777 -R /nfs-vol
+echo "/nfs-vol *(rw,sync,no_subtree_check)" | sudo tee -a /etc/exports
 sudo exportfs -a
 sudo systemctl restart nfs-kernel-server
 
-# PV, PVC, PV-pod setting
-kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/pv-volume.yaml
-kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/pv-claim.yaml
+# CSI Driver
+kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-rbac.yaml
+kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-driverinfo.yaml
+kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-controller.yaml
+kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-node.yaml
+
+# PV, PVC-dynamic
+kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/dynamic-pvc.yaml
+kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/storageclass.yaml
 
 # Nvidia-device-plugin (optional)
-# kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.10.0/nvidia-device-plugin.yml
+kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.13.0/nvidia-device-plugin.yml

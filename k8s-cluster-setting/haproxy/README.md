@@ -60,8 +60,8 @@
     ...
 
     frontend kubernetes-master-lb
-        bind 0.0.0.0:6443
-        option tcplog
+        bind *:6443
+        option tcplog 
         mode tcp
         default_backend kubernetes-master-nodes
 
@@ -71,6 +71,8 @@
         option tcp-check
         option tcplog
         server kube-master-1 10.1.1.133:6443 check
+        server kube-master-2 10.1.1.149:6443 check
+        server kube-master-3 10.1.1.165:6443 check
 
     frontend http-in
         bind *:443 ssl crt /etc/haproxy/certs/unified_ssl_dl-service.chunjae-dl.com.pem
@@ -125,7 +127,6 @@
 ## 5. Join the cluster as a Control-plane node
 * on master-2, master-3 nodes
     ```sh
-    sudo kubeadm config images pull
     sudo kubeadm join kube-lb:6443 \
         --token xxxxxx.xxxxxxxxxxx \
         --discovery-token-ca-cert-hash sha256:xxxxxxxxxxx \
@@ -148,46 +149,47 @@
 ## 7. Label Worker Node's Role
 * on master-1 node
     ```sh
-    kubectl label node kube-worker-1 node-role.kubernetes.io/worker=worker
-    kubectl label node kube-worker-2 node-role.kubernetes.io/worker=worker
-    kubectl label node kube-worker-3 node-role.kubernetes.io/worker=worker
+    kubectl label node kube-worker-cpu-1 node-role.kubernetes.io/worker=worker
+    kubectl label node kube-worker-cpu-2 node-role.kubernetes.io/worker=worker
     ```
 
-## 8. Install Kubeflow
-* on master-1 node
+## 8. Set NFS Server and CSI Driver
+* on nfs volume node(Also, you can use master or worker node)
     ```sh
-    # CNI - flannel
-    kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
-
-    # kustomize
-    wget https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64
-	chmod +x kustomize_3.2.0_linux_amd64
-	sudo mv kustomize_3.2.0_linux_amd64 /usr/local/bin/kustomize
-
     # CSI - nfs-storage
     sudo apt-get install -y nfs-kernel-server rpcbind portmap
     sudo mkdir /nfs-vol
     sudo chmod 777 -R /nfs-vol
-    echo "/nfs-vol *(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
+    # wild card - $ echo "/nfs-vol *(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
+    echo "/nfs-vol 10.1.1.0/24(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
     sudo exportfs -a
     sudo systemctl restart nfs-kernel-server
     sudo systemctl enable nfs-kernel-server
+    ```
 
+* on master-1 node
+    ```sh
+    # CSI Driver Setting - rbac, driverino, controller, nfs node
     kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-rbac.yaml
     kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-driverinfo.yaml
     kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-controller.yaml
     kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-node.yaml
 
+    
     kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/dynamic-pvc.yaml
     kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/storageclass.yaml
-    
 
+    # Set nfs-csi as default storage class
     kubectl patch storageclass nfs-csi -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     ```
 
-
-* Install Kubeflow Packages on master-1 node
+## 9. Install Kubeflow
+* on master-1 node
     ```sh
+    # kustomize
+    wget https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64
+	chmod +x kustomize_3.2.0_linux_amd64
+	sudo mv kustomize_3.2.0_linux_amd64 /usr/local/bin/kustomize
     # install kubeflow package
     while ! kustomize build kubeflow-setting | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
     ```
@@ -196,8 +198,10 @@
 * on master-1, master-2, master-3 nodes
     ```sh
     kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 &
-    # If you port-forward into 80 port...
+    # If you port-forward into 80 port... 
     # sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
+    kubectl port-forward --address 0.0.0.0 -n kubeflow svc/ml-pipeline 8888:8888 &
+    kubectl port-forward --address 0.0.0.0 -n kubeflow svc/minio-service 9000:9000 &
     ```
 * Visit https://{external-dns} 
 
