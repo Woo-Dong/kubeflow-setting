@@ -34,7 +34,7 @@
     sudo mkdir -p /etc/haproxy/certs
     sudo nano /etc/haproxy/certs/unified_ssl_dl-service.chunjae-dl.com.pem
     ```
-* /etc/haproxy/certs/unified_ssl_dl-service.chunjae-dl.com.pem
+* /etc/haproxy/certs/unified_ssl_kubeflow.chunjae-dl.com.pem
     ```sh
     -----BEGIN PRIVATE KEY-----
     ...(YOUR PRIVATE KEY)...
@@ -146,75 +146,10 @@
         --discovery-token-ca-cert-hash sha256:xxxxxxxxxxx
     ```
 
+
 ## 7. Label Worker Node's Role
 * on master-1 node
     ```sh
     kubectl label node kube-worker-cpu-1 node-role.kubernetes.io/worker=worker
     kubectl label node kube-worker-cpu-2 node-role.kubernetes.io/worker=worker
     ```
-
-## 8. Set NFS Server and CSI Driver
-* on nfs volume node(Also, you can use master or worker node)
-    ```sh
-    # CSI - nfs-storage
-    sudo apt-get install -y nfs-kernel-server rpcbind portmap
-    sudo mkdir /nfs-vol
-    sudo chmod 777 -R /nfs-vol
-    # wild card - $ echo "/nfs-vol *(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
-    echo "/nfs-vol 10.1.1.0/24(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
-    sudo exportfs -a
-    sudo systemctl restart nfs-kernel-server
-    sudo systemctl enable nfs-kernel-server
-    ```
-
-* on master-1 node
-    ```sh
-    # CSI Driver Setting - rbac, driverino, controller, nfs node
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-rbac.yaml
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-driverinfo.yaml
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-controller.yaml
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-node.yaml
-
-    
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/dynamic-pvc.yaml
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/storageclass.yaml
-
-    # Set nfs-csi as default storage class
-    kubectl patch storageclass nfs-csi -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-    ```
-
-## 9. Install Kubeflow
-* on master-1 node
-    ```sh
-    # kustomize
-    wget https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64
-	chmod +x kustomize_3.2.0_linux_amd64
-	sudo mv kustomize_3.2.0_linux_amd64 /usr/local/bin/kustomize
-    # install kubeflow package
-    while ! kustomize build kubeflow-setting | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
-    ```
-
-## 9. Port-Forwarding
-* on master-1, master-2, master-3 nodes
-    ```sh
-    kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 &
-    # If you port-forward into 80 port... 
-    # sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
-    kubectl port-forward --address 0.0.0.0 -n kubeflow svc/ml-pipeline 8888:8888 &
-    kubectl port-forward --address 0.0.0.0 -n kubeflow svc/minio-service 9000:9000 &
-    ```
-* Visit https://{external-dns} 
-
-## 10. (Optional) Setup k8s-dashboard
-* on master-1
-    ```sh
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-dashboard/k8s-dashboard.yaml
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-dashboard/metrics-server.yaml
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-dashboard/rbac.yaml
-    ```
-
-* Then, get a Login Token
-    ```sh
-    kubectl -n kubernetes-dashboard create token admin-user
-    ```
-* And visit https://{external-dns}:8443/ 
