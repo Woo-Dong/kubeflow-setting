@@ -96,6 +96,29 @@
     backend dashboard-servers
         mode http
         server kube-master-1 10.1.1.133:30522 maxconn 32
+
+    frontend kfp-api-in
+        bind *:8888 ssl crt /etc/haproxy/certs/unified_ssl_kubeflow.chunjae-dl.com.pem
+        reqadd X-Forwarded-Proto:\ https
+        mode http
+        default_backend kfp-api-servers
+
+    backend kfp-api-servers
+        mode http
+        server kube-master-1 10.1.1.133:8888 maxconn 32
+        server kube-master-2 10.1.1.165:8888 maxconn 32
+        server kube-master-3 10.1.1.166:8888 maxconn 32
+
+    frontend minio-in
+        mode http
+        bind *:9000
+        default_backend minio-servers
+
+    backend minio-servers
+        mode http
+        server kube-master-1 10.1.1.133:9000 maxconn 32
+        server kube-master-2 10.1.1.165:9000 maxconn 32
+        server kube-master-3 10.1.1.166:9000 maxconn 32
     ```
 
 
@@ -152,4 +175,8 @@
     ```sh
     kubectl label node kube-worker-cpu-1 node-role.kubernetes.io/worker=worker
     kubectl label node kube-worker-cpu-2 node-role.kubernetes.io/worker=worker
+    kubectl label node kube-worker-gpu-1 node-role.kubernetes.io/worker=worker
+    kubectl label node kube-worker-gpu-2 node-role.kubernetes.io/worker=worker
+    kubectl label node kube-worker-gpu-3 node-role.kubernetes.io/worker=worker
+    kubectl label node kube-worker-gpu-4 node-role.kubernetes.io/worker=worker
     ```

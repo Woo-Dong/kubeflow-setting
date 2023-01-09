@@ -6,7 +6,7 @@
 * `aws-ec2-cluster`/`create_ec2_instance.sh`
  - Shell Script for creating AWS EC2 instances
  - .env file needed
- - see more README info in the `aws-ec2-cluster` diretory.
+ - see more README info at the directory, `aws-ec2-cluster`.
 
 ## 2. Kuberenetes Cluster (Vanilla)
 * Concept: 1 Master Node + 3 Worker Nodes
@@ -21,9 +21,15 @@
 ### 2-1. Initialize Kubernetes Cluster
   - on Master Node
     ```sh
-    sudo hostnamectl set-hostname kube-master
-    chmod +x 01_master_kube_init.sh
-    ./01_master_kube_init.sh
+    sudo hostnamectl set-hostname {MASTER_HOST_NAME}
+
+    sudo kubeadm init \
+      --pod-network-cidr=10.244.0.0/16 \
+      --kubernetes-version=v1.24.9
+
+    mkdir -p $HOME/.kube
+    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo chown $(id -u):$(id -g) $HOME/.kube/config
     ```
 
 ### 2-2. Join Worker Node with the Cluster
@@ -37,19 +43,12 @@
       --discovery-token-ca-cert-hash sha256:xxxxxxxxxxxxxxxxxx
     ```
 
-    #### 2-2-1. Label Worker Node's Role
+    #### 2-2-2. Label Worker Node's Role
       - on Master Node
         ```sh
         kubectl label node {WORKER_HOST_NAME} node-role.kubernetes.io/worker=worker
         ```
-
-    #### 2-2-2. (Optional) Client Setup
-      - on Worker Node
-        ```sh
-        mkdir -p $HOME/.kube
-        scp -p {MASTER_NODE_USER_ID}@{MASTER_NODE_IP_ADDRESS}:~/.kube/config ~/.kube/config
-        ```
-
+    
 ### 2-3. (Optional) GPU Worker Node - Install Nvidia Driver, nvidia-docker2
 
   - on Master Node
@@ -112,9 +111,9 @@
 
 ## 4. CNI Driver - Flannel
   * on Master Node
-  ```sh
-  kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
-  ```
+    ```sh
+    kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+    ```
 
 ## 5. CSI Driver - NFS Server
   * on NFS Server Node (You can use any lb/master/worker node or EBS Volume on AWS)
@@ -143,14 +142,16 @@
     kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-node.yaml
 
     
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/dynamic-pvc.yaml
+    # Set StorageClass and Dynamic-PVC
+    # Modify NFS Server IP on your own server
     kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/storageclass.yaml
+    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/dynamic-pvc.yaml
 
     # Set nfs-csi as default storage class
     kubectl patch storageclass nfs-csi -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     ```
 
-  * on every Nodes
+  * on every Nodes, already set in the code `00_kube_setting.sh` file.
     ```sh
     # Install nfs client
     sudo apt-get install nfs-common -y

@@ -7,17 +7,36 @@
     ├── k8s-cluster-setting  
     │   ├── aws-ec2-cluster         # IaC(aws-cli)  
     │   ├── haproxy  
-    │   └── persistent-volume       # kubectl apply pv, pvc, pv-pod resources  
+    │   └── persistent-volume       # CSI Driver - NFS Server, kubectl create storage, dynamic PVC
     ├── k8s-dashboard               # kubectl apply k8s-dashboard  
     ├── kubeflow-setting  
-    │   ├── apps   
+    │   ├── apps                    # kubeflow apps
     │   ├── aws                     # kustomize build & kubectl apply deployment with AWS S3 and RDS  
-    │   ├── common  
-    │   ├── contrib  
+    │   ├── common                  # dex, ...
+    │   ├── contrib                 # KServer, ...
     │   └── kustomization.yaml      # kustomize build & kubectl apply kubeflow apps  
     ├── utils                       # etc  
     └── README.md  
 
+
+# TODO & Release Info
+
+### 20230109 - v0.5.0
+* TODO
+    - [ ] Set Katib MySQL binding with AWS RDS  
+    - [ ] Permute ClusterIP to NordPort (Grafana and Prometheus on KFP)
+    - [ ] Port-forward Grafana at HAProxy
+    - [ ] KServe Concept Test & Debugging
+    - [ ] KServe API Test
+    - [ ] And More..
+
+* UPDATED
+    + K8S version updated: v1.22.15 -> v1.24.9
+    + local-path storage with static PV, PVC -> nfs server with dynamic PVC
+    + updated Setting GPU Worker Node: 
+        - kernel version 5.15.0-1019-aws -> 5.15.0-1026-aws
+        - nvidia driver autoinstall -> nvidia 515 driver install (manual)
+---
 
 
 # Getting started
@@ -48,10 +67,11 @@
     - on Master Node
         ```sh
         # Port Forwarding Kubeflow Central Dashboard Web browser 
-        kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 &
         # If you want port-forward to 80 port..
         # $ sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
-
+        kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 &
+        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/ml-pipeline 8888:8888 &
+        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/minio-service 9000:9000 &
         ```
 
     * If you want to deploy with AWS S3 and RDS, see more README info at the directory `kubeflow-setting/aws`.
