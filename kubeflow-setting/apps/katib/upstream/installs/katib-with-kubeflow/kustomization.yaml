@@ -20,6 +20,13 @@ images:
 
 patchesStrategicMerge:
   - patches/remove-namespace.yaml
+  - pathes/db-manager.yaml
+
+secretGenerator:
+  - name: katib-mysql-secrets
+    envs:
+      - secrets.env
+      behavior: replace
 
 vars:
   - fieldref:
