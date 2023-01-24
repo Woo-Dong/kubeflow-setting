@@ -13,7 +13,7 @@
     │   ├── apps                    # kubeflow apps
     │   ├── aws                     # kustomize build & kubectl apply deployment with AWS S3 and RDS  
     │   ├── common                  # dex, ...
-    │   ├── contrib                 # KServer, ...
+    │   ├── contrib                 # KServe, ...
     │   └── kustomization.yaml      # kustomize build & kubectl apply kubeflow apps  
     ├── utils                       # etc  
     └── README.md  
@@ -23,9 +23,9 @@
 
 ### 20230109 - v0.5.0
 * TODO
-    - [ ] Set Katib MySQL binding with AWS RDS  
-    - [ ] Permute ClusterIP to NordPort (Grafana and Prometheus on KFP)
-    - [ ] Port-forward Grafana at HAProxy
+    - [x] Set Katib MySQL binding with AWS RDS  
+    - [x] Port-forward Grafana, Prometheus at HAProxy
+    - [x] Replace NodePort forwarding instead of Port-forwarding the ingressgateway service
     - [ ] KServe Concept Test & Debugging
     - [ ] KServe API Test
     - [ ] And More..
@@ -69,9 +69,11 @@
         # Port Forwarding Kubeflow Central Dashboard Web browser 
         # If you want port-forward to 80 port..
         # $ sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
-        kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 &
+        # kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 & # Replace via HaProxy config(Listening 31691 port, exposing NodePort of istio-ingressgateway service)
         kubectl port-forward --address 0.0.0.0 -n kubeflow svc/ml-pipeline 8888:8888 &
         kubectl port-forward --address 0.0.0.0 -n kubeflow svc/minio-service 9000:9000 &
+        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/grafana 30525:3000 &
+        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/prometheus 30526:9090 &
         ```
 
     * If you want to deploy with AWS S3 and RDS, see more README info at the directory `kubeflow-setting/aws`.
@@ -96,4 +98,4 @@
     kubectl -n kubernetes-dashboard create token admin-user
     ```
 
-* And visit https://{external-dns}:8443/ 
+* And visit https://{external-dns}:8443/
