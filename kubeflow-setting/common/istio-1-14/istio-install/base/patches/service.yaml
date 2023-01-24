@@ -5,3 +5,8 @@ metadata:
   namespace: istio-system
 spec:
   type: NodePort
+  ports:
+    - nodePort: 31691
+      port: 80
+  selector:
+    app: istio-ingressgateway
