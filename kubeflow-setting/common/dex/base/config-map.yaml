@@ -18,15 +18,15 @@ data:
       skipApprovalScreen: true
     enablePasswordDB: true
     staticPasswords:
-    - email: guest@chunjae.co.kr
-      hash: $2y$12$MGmm7M4Y42MzPF6B1S8yUeH49y5Xl2N.sCC2zzYpPCizGLppXVtl2
-      username: guest
+    - email: user@example.com
+      hash: $2y$12$4K/VkmDd1q1Orb3xAt82zu8gk7Ad6ReFR4LCP9UeYE90NLiN9Df72
+      # https://github.com/dexidp/dex/pull/1601/commits
+      # FIXME: Use hashFromEnv instead
+      username: user
       userID: "15841185641784"
-
-
     staticClients:
     # https://github.com/dexidp/dex/pull/1664
     - idEnv: OIDC_CLIENT_ID
-      redirectURIs: ["/login/oidc"]
+      redirectURIs: ["/authservice/oidc/callback"]
       name: 'Dex Login Application'
       secretEnv: OIDC_CLIENT_SECRET
