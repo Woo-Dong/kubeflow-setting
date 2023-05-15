@@ -59,7 +59,7 @@
         sudo mv kustomize /usr/local/bin/kustomize
 
         # Deploy Kubeflow
-        while ! kustomize build example | awk '!/well-defined/' | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
+        while ! kustomize build kubeflow-setting | awk '!/well-defined/' | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
         ```
 
 * Port forwarding the Kubeflow dashboard
