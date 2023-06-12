@@ -68,11 +68,11 @@
         # Port Forwarding Kubeflow Central Dashboard Web browser 
         # If you want port-forward to 80 port..
         # $ sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
-        kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 & # Replace via HaProxy config(Listening 31691 port, exposing NodePort of istio-ingressgateway service)
-        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/ml-pipeline 8888:8888 &
-        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/minio-service 9000:9000 &
-        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/grafana 30525:3000 &
-        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/prometheus 30526:9090 &
+        # kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 & # Replace via HaProxy config(Listening 31691 port, exposing NodePort of istio-ingressgateway service)
+        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/ml-pipeline 30523:8888 &
+        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/minio-service 30524:9000 &
+        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/grafana 30525:3000 &
+        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/prometheus 30526:9090 &
         ```
 
     * If you want to deploy with AWS S3 and RDS, see more README info at the directory `kubeflow-setting/aws`.
@@ -97,4 +97,4 @@
     kubectl -n kubernetes-dashboard create token admin-user
     ```
 
-* And visit https://{external-dns}:8443/
+* And visit https://{external-dns}:30522/

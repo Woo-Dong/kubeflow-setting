@@ -3,8 +3,10 @@ kind: Service
 metadata:
   name: minio-service
 spec:
+  type: NodePort
   ports:
   - name: http
+    nodePort: 30524
     port: 9000
     protocol: TCP
     targetPort: 9000
