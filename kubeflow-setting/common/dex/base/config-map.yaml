@@ -22,11 +22,10 @@ data:
       hash: $2y$12$MGmm7M4Y42MzPF6B1S8yUeH49y5Xl2N.sCC2zzYpPCizGLppXVtl2
       username: guest
       userID: "15841185641784"
-
-
+      
     staticClients:
     # https://github.com/dexidp/dex/pull/1664
     - idEnv: OIDC_CLIENT_ID
-      redirectURIs: ["/login/oidc"]
+      redirectURIs: ["/authservice/oidc/callback"]
       name: 'Dex Login Application'
       secretEnv: OIDC_CLIENT_SECRET

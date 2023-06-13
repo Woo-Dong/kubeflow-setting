@@ -36,27 +36,14 @@ sudo sysctl --system
 
 
 # install kubelet, kubeadm
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl &&
 sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg &&
-echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list &&
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list &&
 sudo apt-get update
 sudo apt-get install -y kubelet=1.24.9-00 kubeadm=1.24.9-00 &&
 sudo apt-mark hold kubelet kubeadm kubectl
 
 # install nfs-client
 sudo apt-get install -y nfs-common
-
-# modify ip address on your eni
-echo -e "\n10.1.1.5 kube-lb" | sudo tee -a /etc/hosts
-echo "10.1.1.133 kube-master-1" | sudo tee -a /etc/hosts
-echo "10.1.1.165 kube-master-2" | sudo tee -a /etc/hosts
-echo "10.1.1.166 kube-master-3" | sudo tee -a /etc/hosts
-
-echo "10.1.1.135 kube-worker-cpu-1" | sudo tee -a /etc/hosts
-echo "10.1.1.168 kube-worker-cpu-2" | sudo tee -a /etc/hosts
-
-echo "10.1.1.138 kube-worker-gpu-1" | sudo tee -a /etc/hosts
-echo "10.1.1.170 kube-worker-gpu-2" | sudo tee -a /etc/hosts
-echo "10.1.1.139 kube-worker-gpu-3" | sudo tee -a /etc/hosts
-echo "10.1.1.171 kube-worker-gpu-4" | sudo tee -a /etc/hosts

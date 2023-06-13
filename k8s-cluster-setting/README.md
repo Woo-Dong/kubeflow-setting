@@ -8,8 +8,8 @@
  - .env file needed
  - see more README info at the directory, `aws-ec2-cluster`.
 
-## 2. Kuberenetes Cluster (Vanilla)
-* Concept: 1 Master Node + 3 Worker Nodes
+## 2. Kuberenetes Cluster (High Availability)
+* Concept: 3 Master Node + N Worker Nodes
 
 ### 2-0. Install Docker & Kubernetes tools
    - on Master & Worker Node
@@ -23,7 +23,14 @@
     ```sh
     sudo hostnamectl set-hostname {MASTER_HOST_NAME}
 
+    # Vanilla Cluster ( 1 Master Node + N Worker Node )
+    # sudo kubeadm init \
+    #  --pod-network-cidr=10.244.0.0/16 \
+    #   --kubernetes-version=v1.24.9
+
     sudo kubeadm init \
+      --control-plane-endpoint={YOUR_ELB_SUB_DOMAIN}.elb.ap-northeast-2.amazonaws.com \
+      --upload-certs \
       --pod-network-cidr=10.244.0.0/16 \
       --kubernetes-version=v1.24.9
 
@@ -31,6 +38,15 @@
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
     ```
+  
+  - on the other Master Nodes for joinng the cluster
+  ```sh
+  sudo kubeadm join --control-plane-endpoint={YOUR_ELB_SUB_DOMAIN}.elb.ap-northeast-2.amazonaws.com \
+    --token xxxx.xxxxxx \
+    --discovery-token-ca-cert-hash sha256:xxxxxxxx \
+    --control-plane \
+    --certificate-key xxxxxxxx
+  ```
 
 ### 2-2. Join Worker Node with the Cluster
   
@@ -38,8 +54,9 @@
     #### 2-2-1. Join 
     ```sh
     sudo hostnamectl set-hostname {WORKER_HOST_NAME}
-    sudo kubeadm join {MASTER_NODE_IP_ADDRESS}:6443 \
-      --token xxxxxxxxxxx \
+    
+    sudo kubeadm join {YOUR_ELB_SUB_DOMAIN}.elb.ap-northeast-2.amazonaws.com:6443 \
+      --token xxxx.xxxxxxxx \
       --discovery-token-ca-cert-hash sha256:xxxxxxxxxxxxxxxxxx
     ```
 
@@ -105,9 +122,7 @@
       ```
 
 ## 3. Kubernetes Cluster with HA(High Availability) proxy
-- Concept: 1 LoadBalancer + 3 Master Nodes + N Worker Nodes
-- Pre-requisite: SSL Certificate
-- See more README info at directory, `haproxy`.
+- Concept: AWS Elastic Load Balancer + 3 Master Nodes + N Worker Nodes
 
 ## 4. CNI Driver - Flannel
   * on Master Node
@@ -115,46 +130,76 @@
     kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
     ```
 
-## 5. CSI Driver - NFS Server
-  * on NFS Server Node (You can use any lb/master/worker node or EBS Volume on AWS)
-    ```sh
-    # Install nfs server
-    sudo apt-get install -y nfs-kernel-server rpcbind portmap
+## 5. PV, PVC, Provisioner using Amazon EFS(Elastic File System)
 
-    # Set nfs volume
-    sudo mkdir /nfs-vol
-    sudo chmod 777 -R /nfs-vol
-
-    # wild card - $ echo "/nfs-vol *(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
-    echo "/nfs-vol 10.1.1.0/24(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
-    sudo exportfs -a
-
-    sudo systemctl restart nfs-kernel-server
-    sudo systemctl enable nfs-kernel-server
+  - IAM Policy for accessing Amazon EFS
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "elasticfilesystem:DescribeAccessPoints",
+            "elasticfilesystem:DescribeFileSystems",
+            "elasticfilesystem:DescribeMountTargets",
+            "ec2:DescribeAvailabilityZones"
+          ],
+          "Resource": "*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "elasticfilesystem:CreateAccessPoint"
+          ],
+          "Resource": "*",
+          "Condition": {
+            "StringLike": {
+              "aws:RequestTag/efs.csi.aws.com/cluster": "true"
+            }
+          }
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "elasticfilesystem:TagResource"
+          ],
+          "Resource": "*",
+          "Condition": {
+            "StringLike": {
+              "aws:ResourceTag/efs.csi.aws.com/cluster": "true"
+            }
+          }
+        },
+        {
+          "Effect": "Allow",
+          "Action": "elasticfilesystem:DeleteAccessPoint",
+          "Resource": "*",
+          "Condition": {
+            "StringEquals": {
+              "aws:ResourceTag/efs.csi.aws.com/cluster": "true"
+            }
+          }
+        }
+      ]
+    }
     ```
 
-  * on Master Node
-    ```sh
-    # CSI Driver Setting - rbac, driverino, controller, nfs node
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-rbac.yaml
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-driverinfo.yaml
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-controller.yaml
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/nfs/csi-nfs-node.yaml
+  - rbac, sc, deployment, etc
+    * on Master Node
+      ```sh
+      kubectl apply -f efs-provisioner/provisioner.yaml # included setting default storageclass
+      ```
 
-    
-    # Set StorageClass and Dynamic-PVC
-    # Modify NFS Server IP on your own server
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/storageclass.yaml
-    kubectl apply -f https://raw.githubusercontent.com/Woo-Dong/kubeflow-setting/master/k8s-cluster-setting/persistent-volume/dynamic-pvc.yaml
-
-    # Set nfs-csi as default storage class
-    kubectl patch storageclass nfs-csi -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-    ```
-
-  * on every Nodes, already set in the code `00_kube_setting.sh` file.
-    ```sh
-    # Install nfs client
-    sudo apt-get install nfs-common -y
-    ```
-  
-
+  - (optional) mounting Amazon EFS on Amazon EC2 at the path, `/mnt/efs`.
+    * on Master Node
+      ```sh
+      # pre-requisites: setting aws-cli configure
+      sudo apt-get -y install binutils
+      git clone https://github.com/aws/efs-utils
+      cd ./efs-utils
+      ./build-deb.sh
+      sudo apt-get -y install ./build/amazon-efs-utils*deb
+      sudo mkdir -p /mnt/efs
+      sudo mount -t efs -o tls,iam fs-xxxxxx.efs.ap-northeast-2.amazonaws.com /mnt/efs/
+      ```

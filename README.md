@@ -21,10 +21,10 @@
 
 # TODO & Release Info
 
-### 20230109 - v0.5.0
+### 20230512 - v0.6.0
 * TODO
-    - [x] Set Katib MySQL binding with AWS RDS  
-    - [x] Port-forward Grafana, Prometheus at HAProxy
+    - [x] Delete HAProxy 
+    - [x] Set Amazon EFS Provisioner instead of nfs-server on Amazon EBS
     - [x] Replace NodePort forwarding instead of Port-forwarding the ingressgateway service
     - [ ] KServe Concept Test & Debugging
     - [ ] KServe API Test
@@ -35,8 +35,6 @@
     + local-path storage with static PV, PVC -> nfs server with dynamic PVC
     + updated Setting GPU Worker Node: 
         - kernel version 5.15.0-1019-aws -> 5.15.0-1026-aws
-        - nvidia driver autoinstall -> nvidia 515 driver install (manual)
----
 
 
 # Getting started
@@ -47,33 +45,34 @@
 
 ## 2. Install Kubeflow
 * Version Info
-    - Kubeflow version: v1.6.1
+    - Kubeflow version: v1.7.0
     - Kubernetes version: v1.24.9
-    - Kustomize version: v3.2.0  
+    - Kustomize version: v5.0.3
 
 * Install Kubeflow
      - on Master Node
         ```sh
         # kustomize
-        wget https://github.com/kubernetes-sigs/kustomize/releases/download/v3.2.0/kustomize_3.2.0_linux_amd64
-        chmod +x kustomize_3.2.0_linux_amd64
-        sudo mv kustomize_3.2.0_linux_amd64 /usr/local/bin/kustomize
+        wget https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.0.3/kustomize_v5.0.3_linux_amd64.tar.gz
+        tar -zxvf kustomize_v5.0.3_linux_amd64.tar.gz
+        chmod +x kustomize
+        sudo mv kustomize /usr/local/bin/kustomize
 
         # Deploy Kubeflow
-        while ! kustomize build kubeflow-setting | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
+        while ! kustomize build kubeflow-setting | awk '!/well-defined/' | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
         ```
 
-* Enjoy Kubeflow dashboard
+* Port forwarding the Kubeflow dashboard
     - on Master Node
         ```sh
         # Port Forwarding Kubeflow Central Dashboard Web browser 
         # If you want port-forward to 80 port..
         # $ sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
         # kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 & # Replace via HaProxy config(Listening 31691 port, exposing NodePort of istio-ingressgateway service)
-        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/ml-pipeline 8888:8888 &
-        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/minio-service 9000:9000 &
-        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/grafana 30525:3000 &
-        kubectl port-forward --address 0.0.0.0 -n kubeflow svc/prometheus 30526:9090 &
+        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/ml-pipeline 30523:8888 &
+        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/minio-service 30524:9000 &
+        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/grafana 30525:3000 &
+        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/prometheus 30526:9090 &
         ```
 
     * If you want to deploy with AWS S3 and RDS, see more README info at the directory `kubeflow-setting/aws`.
@@ -98,4 +97,4 @@
     kubectl -n kubernetes-dashboard create token admin-user
     ```
 
-* And visit https://{external-dns}:8443/
+* And visit https://{external-dns}:30522/

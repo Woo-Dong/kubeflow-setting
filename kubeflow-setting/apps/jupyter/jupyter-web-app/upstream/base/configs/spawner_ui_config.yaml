@@ -17,22 +17,23 @@
 spawnerFormDefaults:
   image:
     # The container Image for the user's Jupyter Notebook
-    value: 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter/scipy:20221130
+    value: kubeflownotebookswg/jupyter-scipy:v1.7.0-rc.0
     # The list of available standard container Images
     options:
-    - 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter/scipy:20221130
-    - 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter/tensorflow:20221130
-    - 447600660135.dkr.ecr.ap-northeast-2.amazonaws.com/jupyter/tensorflow-cuda:20221130
-    - elyra/kf-notebook:3.12.0
+    - kubeflownotebookswg/jupyter-scipy:v1.7.0-rc.0
+    - kubeflownotebookswg/jupyter-pytorch-full:v1.7.0-rc.0
+    - kubeflownotebookswg/jupyter-pytorch-cuda-full:v1.7.0-rc.0
+    - kubeflownotebookswg/jupyter-tensorflow-full:v1.7.0-rc.0
+    - kubeflownotebookswg/jupyter-tensorflow-cuda-full:v1.7.0-rc.0
   imageGroupOne:
     # The container Image for the user's Group One Server
     # The annotation `notebooks.kubeflow.org/http-rewrite-uri: /`
     # is applied to notebook in this group, configuring
     # the Istio rewrite for containers that host their web UI at `/`
-    value: kubeflownotebookswg/codeserver-python:v1.6.1
+    value: kubeflownotebookswg/codeserver-python:v1.7.0-rc.0
     # The list of available standard container Images
     options:
-    - kubeflownotebookswg/codeserver-python:v1.6.1
+    - kubeflownotebookswg/codeserver-python:v1.7.0-rc.0
   imageGroupTwo:
     # The container Image for the user's Group Two Server
     # The annotation `notebooks.kubeflow.org/http-rewrite-uri: /`
@@ -41,10 +42,10 @@ spawnerFormDefaults:
     # The annotation `notebooks.kubeflow.org/http-headers-request-set`
     # is applied to notebook in this group, configuring Istio
     # to add the `X-RStudio-Root-Path` header to requests
-    value: kubeflownotebookswg/rstudio-tidyverse:v1.6.1
+    value: kubeflownotebookswg/rstudio-tidyverse:v1.7.0-rc.0
     # The list of available standard container Images
     options:
-    - kubeflownotebookswg/rstudio-tidyverse:v1.6.1
+    - kubeflownotebookswg/rstudio-tidyverse:v1.7.0-rc.0
   # If true, hide registry and/or tag name in the image selection dropdown
   hideRegistry: true
   hideTag: false
@@ -57,7 +58,7 @@ spawnerFormDefaults:
     readOnly: false
   cpu:
     # CPU for user's Notebook
-    value: '1'
+    value: '0.5'
     # Factor by with to multiply request to calculate limit
     # if no limit is set, to disable set "none"
     limitFactor: "1.2"
@@ -83,7 +84,7 @@ spawnerFormDefaults:
         spec:
           resources:
             requests:
-              storage: 5Gi
+              storage: 10Gi
           accessModes:
           - ReadWriteOnce
     readOnly: false
@@ -116,8 +117,8 @@ spawnerFormDefaults:
       vendors:
       - limitsKey: "nvidia.com/gpu"
         uiName: "NVIDIA"
-      # - limitsKey: "amd.com/gpu"
-        # uiName: "AMD"
+      - limitsKey: "amd.com/gpu"
+        uiName: "AMD"
       # Values: "" or a `limits-key` from the vendors list
       vendor: ""
     readOnly: false

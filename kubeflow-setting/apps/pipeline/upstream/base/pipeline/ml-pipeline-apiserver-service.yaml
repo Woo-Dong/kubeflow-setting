@@ -7,14 +7,16 @@ metadata:
     prometheus.io/scheme: http
     prometheus.io/scrape: "true"
 spec:
+  type: NodePort
   ports:
-  - name: http
-    port: 8888
-    protocol: TCP
-    targetPort: 8888
-  - name: grpc
-    port: 8887
-    protocol: TCP
-    targetPort: 8887
+    - name: http
+      nodePort: 30523
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+    - name: grpc
+      port: 8887
+      protocol: TCP
+      targetPort: 8887
   selector:
     app: ml-pipeline
