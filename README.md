@@ -21,20 +21,15 @@
 
 # TODO & Release Info
 
-### 20230512 - v0.6.0
+### 20230613 - v1.0.0
 * TODO
-    - [x] Delete HAProxy 
-    - [x] Set Amazon EFS Provisioner instead of nfs-server on Amazon EBS
-    - [x] Replace NodePort forwarding instead of Port-forwarding the ingressgateway service
-    - [ ] KServe Concept Test & Debugging
-    - [ ] KServe API Test
+    - [ ] Add Feast(Feature Store)
     - [ ] And More..
 
 * UPDATED
-    + K8S version updated: v1.22.15 -> v1.24.9
-    + local-path storage with static PV, PVC -> nfs server with dynamic PVC
-    + updated Setting GPU Worker Node: 
-        - kernel version 5.15.0-1019-aws -> 5.15.0-1026-aws
+    + Kubeflow version updated -> v1.7.0
+    + nfs server with dynamic PVC -> Amazon EFS Provisioner
+    + Amazon RDS, S3 deleted -> Amazon EFS - PVC
 
 
 # Getting started
