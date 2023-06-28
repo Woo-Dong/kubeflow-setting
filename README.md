@@ -22,9 +22,6 @@
 # TODO & Release Info
 
 ### 20230613 - v1.0.0
-* TODO
-    - [ ] Add Feast(Feature Store)
-    - [ ] And More..
 
 * UPDATED
     + Kubeflow version updated -> v1.7.0
@@ -57,19 +54,6 @@
         while ! kustomize build kubeflow-setting | awk '!/well-defined/' | kubectl apply -f -; do echo "Retrying to apply resources"; sleep 10; done
         ```
 
-* Port forwarding the Kubeflow dashboard
-    - on Master Node
-        ```sh
-        # Port Forwarding Kubeflow Central Dashboard Web browser 
-        # If you want port-forward to 80 port..
-        # $ sudo -E kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 80:80 &
-        # kubectl port-forward --address 0.0.0.0 svc/istio-ingressgateway -n istio-system 8080:80 & # Replace via HaProxy config(Listening 31691 port, exposing NodePort of istio-ingressgateway service)
-        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/ml-pipeline 30523:8888 &
-        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/minio-service 30524:9000 &
-        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/grafana 30525:3000 &
-        # kubectl port-forward --address 0.0.0.0 -n kubeflow svc/prometheus 30526:9090 &
-        ```
-
     * If you want to deploy with AWS S3 and RDS, see more README info at the directory `kubeflow-setting/aws`.
 
 ## 3. Setting Custom Jupyter / Docker Image for pulling them at Notebook/KFP 
@@ -93,3 +77,33 @@
     ```
 
 * And visit https://{external-dns}:30522/
+
+
+### KServe
+* ServiceAccount Management
+* Fill your AWS_ACCESS_KEY and AWS_SECRET_ACCESS_KEY value and `kubectl apply -f kserve-sa.yaml`
+* kserve-sa.yaml
+    ```yaml
+    apiVersion: v1
+    kind: Secret
+    metadata:
+    name: s3creds
+    namespace: {YOUR_NAMESPACE}
+    annotations:
+        serving.kserve.io/s3-endpoint: s3.amazonaws.com # replace with your s3 endpoint e.g minio-service.kubeflow:9000
+        serving.kserve.io/s3-usehttps: "1" # by default 1, if testing with minio you can set to 0
+        serving.kserve.io/s3-region: "ap-northeast-2"
+        serving.kserve.io/s3-useanoncredential: "false" # omitting this is the same as false, if true will ignore provided credential and use anonymous credentials
+    type: Opaque
+    stringData: # use `stringData` for raw credential string or `data` for base64 encoded string
+    AWS_ACCESS_KEY_ID: {YOUR_AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: {YOUR_AWS_SECRET_ACCESS_KEY}
+    ---
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+    name: kserve-sa
+    namespace: {YOUR_NAMESPACE}
+    secrets:
+    - name: s3creds
+    ```
