@@ -22,6 +22,10 @@ data:
       hash: $2y$12$MGmm7M4Y42MzPF6B1S8yUeH49y5Xl2N.sCC2zzYpPCizGLppXVtl2
       username: guest
       userID: "15841185641784"
+    - email: ai-devops@chunjae.co.kr
+      hash: $2y$12$CK4AwpLGE532q8S7as3QserNDHBzPluqNL2AqeQhCL6faEGaO2U6u. # devops123@
+      username: ai-devops
+      userID: "15841185641785"
       
     staticClients:
     # https://github.com/dexidp/dex/pull/1664

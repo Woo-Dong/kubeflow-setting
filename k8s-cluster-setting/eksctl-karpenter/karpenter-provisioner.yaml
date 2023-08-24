@@ -1,0 +1,36 @@
+apiVersion: karpenter.sh/v1alpha5
+kind: Provisioner
+metadata:
+  name: default-provisioner
+spec:
+  requirements:
+    - key: karpenter.sh/capacity-type
+      operator: In
+      values: ["on-demand"]
+    - key: "karpenter.k8s.aws/instance-category"
+      operator: In
+      values: ["t", "c", "g"]
+  limits:
+    resources:
+      cpu: 100
+      memory: 1000Gi
+      nvia.com/gpu: 3
+  providerRef:
+    name: default-nodetemplate
+  ttlSecondsAfterEmpty: 60
+---
+apiVersion: karpenter.k8s.aws/v1alpha1
+kind: AWSNodeTemplate
+metadata:
+  name: default-nodetemplate
+spec:
+  subnetSelector:
+    karpenter.sh/discovery: {CLUSTER_NAME}
+  securityGroupSelector:
+    aws:eks:cluster-name: "{CLUSTER_NAME}"
+  blockDeviceMappings:
+    - deviceName: /dev/xvda # root Volume to store OS Binaries
+      ebs:
+        volumeType: gp3 # EBS Volume Type
+        volumeSize: 50Gi # Size of the disk
+        deleteOnTermination: true # Disk Retention Policy

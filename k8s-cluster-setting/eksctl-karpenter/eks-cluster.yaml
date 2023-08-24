@@ -1,0 +1,96 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: {CLUSTER_NAME}
+  region: ap-northeast-2
+  version: "1.24"
+  tags:
+    karpenter.sh/discovery: {CLUSTER_NAME}
+    
+vpc:
+  subnets:
+    private:
+      ap-northeast-2a: { id: subnet-{SUBNET_ID} }
+      ap-northeast-2b: { id: subnet-{SUBNET_ID} }
+      ap-northeast-2c: { id: subnet-{SUBNET_ID} }
+
+# IAM OIDC & Service Account
+iam:
+  withOIDC: true
+  serviceAccounts:
+    - metadata:
+        name: aws-load-balancer-controller
+        namespace: kube-system
+      wellKnownPolicies:
+        awsLoadBalancerController: true
+    - metadata:
+        name: cert-manager
+        namespace: cert-manager
+      wellKnownPolicies:
+        certManager: true
+    - metadata:
+        name: efs-csi-controller-sa
+        namespace: kube-system
+      wellKnownPolicies:
+        efsCSIController: true
+    - metadata:
+        name: external-dns
+        namespace: kube-system
+      wellKnownPolicies:
+        externalDNS: true
+    - metadata:
+        name: karpenter
+        namespace: karpenter
+      roleName: eks-kubeflow-karpenter
+      attachPolicyARNs:
+      - arn:aws:iam::{AWS_ACCOUNT_ID}:policy/KarpenterControllerPolicy-{CLUSTER_NAME}
+      roleOnly: true
+    # - metadata:  
+    #     name: cluster-autoscaler
+    #     namespace: kube-system
+    #   wellKnownPolicies:
+    #     autoScaler: true
+
+iamIdentityMappings:
+- arn: "arn:aws:iam::{AWS_ACCOUNT_ID}:role/KarpenterNodeRole-{CLUSTER_NAME}"
+  username: system:node:{{EC2PrivateDNSName}}
+  groups:
+  - system:bootstrappers
+  - system:nodes
+
+
+managedNodeGroups:
+  - name: worker-default
+    labels: { role: workers }
+    tags:
+      k8s.io/cluster-autoscaler/enabled: "true"
+    instanceType: t3.xlarge
+    minSize: 1
+    desiredCapacity: 2
+    maxSize: 3
+    privateNetworking: true
+    availabilityZones: ["ap-northeast-2a", "ap-northeast-2b", "ap-northeast-2c"]
+    iam:
+      withAddonPolicies:
+        albIngress: true
+        externalDNS: true
+        efs: true
+        # autoScaler: true
+
+  - name: worker-gpu
+    labels: { role: workers }
+    tags:
+      k8s.io/cluster-autoscaler/enabled: "true"
+    instanceType: g3s.xlarge
+    minSize: 1
+    desiredCapacity: 1
+    maxSize: 2
+    privateNetworking: true
+    availabilityZones: ["ap-northeast-2a", "ap-northeast-2c"]
+    iam:
+      withAddonPolicies:
+        albIngress: true
+        externalDNS: true
+        efs: true
+        # autoScaler: true
